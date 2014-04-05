@@ -1,0 +1,21 @@
+doctype
+html(lang="en")
+  head
+    title #{title} - My Site
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    link(rel="stylesheet", href="/stylesheets/main.css")
+  body
+    .site-wrapper
+      .site-wrapper-inner
+        .cover-container
+          include includes/nav
+          .inner.cover
+            block content
+          .mastfoot
+            .inner
+              p
+                | Built with&nbsp;
+                a(href="http://getbootstrap.com") Bootstrap
+                |  with love
+  script(src="/bower_components/jquery/dist/jquery.js")
+  script(src="/javascripts/main.js")

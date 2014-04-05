@@ -1,0 +1,9 @@
+extend layout_login
+block content
+  #login.container
+    form(action="/login", method="post", class="form-signin" role="form")
+      p #{message}
+      h2.form-signin-heading Please sign in
+      input#username.form-control(name="username" type="text" placeholder="Email Address" required="" autofocus="")
+      input#password.form-control(name="password" type="password" placeholder="Password" required="")
+      button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign In
