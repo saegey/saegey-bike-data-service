@@ -1,0 +1,11 @@
+extend layout
+block content
+  ul.list-group
+    each day in dailyPlaces
+      if day.date
+        li.list-group-item
+          h3.date #{day.date}
+          each segment in day.segments
+            p.segment-start-time Total Time: #{segment.totalTime} minutes
+            p.segment-place 
+              a(href="http://maps.google.com/maps?&z=10&q=#{segment.place.location.lat}+#{segment.place.location.lon}&&ll=#{segment.place.location.lat}+#{segment.place.location.lon}") #{segment.place.name || "None"}

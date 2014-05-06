@@ -1,7 +1,7 @@
 exports.authorize = function(moves) {
   return function(req, res) {
     moves.authorize({
-        scope: ['activity']
+        scope: ['activity', 'location']
       , state: '123'
     }, res);
   }

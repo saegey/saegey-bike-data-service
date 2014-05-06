@@ -5,7 +5,7 @@ block content
       if s.summary
         li.list-group-item
           h3.date
-            =moment(s.date).format('LL')
+            =s.date
             each activity in s.summary
               h4.activity #{activity.activity.capitalize()}
               p.minutes #{activity.durationMinutes} minutes

@@ -16,8 +16,13 @@ activitySchema.virtual('distanceMiles').get(function () {
   return (this.distance * 0.000621371).toPrecision(3);
 });
 
+activitySchema.virtual('friendlyDate').get(function () {
+  return Date.parse(this.date.substr(4,2) + "/" +
+    this.date.substr(6,2) + "/" + this.date.substr(0,4));
+});
+
 var movesDaySummarySchema = mongoose.Schema({
-  date:  { type: Date, unique: true, required: true },
+  date:  { type: Number },
   summary: [activitySchema]
   // lastUpdate: { type: Date, required: true }
 });

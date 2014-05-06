@@ -3,6 +3,7 @@ var express = require("express");
 var logfmt = require("logfmt");
 var routes = require("./routes");
 var movesAuth = require("./routes/moves");
+var moment = require('moment');
 var http = require("http");
 var path = require("path");
 var Moves = require("moves");
@@ -18,6 +19,7 @@ var mongoose = require('mongoose');
 var User = require('./models/user');
 var MovesUser = require('./models/moves_user');
 var MovesDaySummary = require('./models/moves_day_summary');
+var MovesDailyPlace = require('./models/moves_daily_place');
 
 mongoose.connect(process.env.MONGOHQ_URL);
 var db = mongoose.connection;
@@ -120,7 +122,28 @@ app.get('/moves/token', movesAuth.token(moves, MovesUser));
 app.get('/dailySummaries', function(req, res) {
   MovesDaySummary.find({}, function(err, summaries) {
     if (!err){
+      console.log(summaries);
       res.render('summaries', { summaries: summaries })
+    } else { throw err;}
+  });
+});
+
+app.get('/weeklyBiking', function(req, res) {
+  end = moment();
+  start = moment().subtract('days', 7)
+  MovesDaySummary.find({ summary: { $elemMatch: { activity: 'cycling' } } }, function(err, summaries) {
+    if (!err){
+      console.log(summaries);
+      //res.render('summaries', { summaries: summaries })
+    } else { throw err;}
+  });
+});
+
+app.get('/places', function(req, res) {
+  MovesDailyPlace.find({}, function(err, dailyPlaces) {
+    if (!err){
+      console.log(dailyPlaces);
+      res.render('places', { dailyPlaces: dailyPlaces })
     } else { throw err;}
   });
 });
@@ -150,12 +173,6 @@ app.post("/login", function(req, res, next) {
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
-});
-
-app.get('/test', ensureAuthenticated, function(req, res){
-  getMovesDailySummary(req.user.username, function(summaries) {
-    res.json(summaries);
-  });
 });
 
 // Simple route middleware to ensure user is authenticated.
