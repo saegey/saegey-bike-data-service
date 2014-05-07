@@ -21,7 +21,7 @@ var MovesUser = require('./models/moves_user');
 var MovesDaySummary = require('./models/moves_day_summary');
 var MovesDailyPlace = require('./models/moves_daily_place');
 
-mongoose.connect(process.env.MONGOHQ_URL);
+mongoose.connect(process.env.MONGO_URL);
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function callback() {

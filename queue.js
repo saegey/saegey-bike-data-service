@@ -6,7 +6,7 @@ var minute = 100;
 var mongoose = require('mongoose');
 var MovesDataStorageService = require('./services/moves_data_storage_service');
 
-mongoose.connect(process.env.MONGOHQ_URL);
+mongoose.connect(process.env.MONGO_URL);
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function callback() {
