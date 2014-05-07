@@ -1,6 +1,7 @@
 var Moves = require("moves");
 var MovesUser = require('../models/moves_user');
 var MovesDaySummary = require('../models/moves_day_summary');
+var MovesDailyPlace = require('../models/moves_daily_place');
 var moves = new Moves({
   api_base: "https://api.moves-app.com/api/1.1",
   client_id: process.env.MOVES_CLIENT_ID,
