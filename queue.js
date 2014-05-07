@@ -13,28 +13,18 @@ db.once("open", function callback() {
   console.log("Connected to DB");
 });
 
-var j = schedule.scheduleJob('* * * * *', function() {
-  var summary = jobs.create('movesDailySummary', {
-    title: 'Update movesDailySummary',
+var j = schedule.scheduleJob('0 */2 * * *', function() {
+  jobs.create('updateMovesData', {
+    title: 'Update moves data',
     username: 'adams'
   }).priority('high').save();
 });
 
-
-// email.on('complete', function () {
-//   console.log('renewal job completed');
-// });
-
-var dataStorageService = new MovesDataStorageService('adams');
-dataStorageService.syncDailySummary();
-dataStorageService.syncDailyPlaces();
-
-// jobs.process('movesDailySummary', 10, function (job, done) {
-//   getMovesDailySummary(job.data.username, function(summaries) {
-//     console.log(summaries);
-//     updateMovesSummaries(summaries);
-//   });
-//   done();
-// });
+jobs.process('updateMovesData', 10, function (job, done) {
+  var dataStorageService = new MovesDataStorageService(job.data.username);
+  dataStorageService.syncDailySummary();
+  dataStorageService.syncDailyPlaces();
+  done();
+});
 
 kue.app.listen(3000);
