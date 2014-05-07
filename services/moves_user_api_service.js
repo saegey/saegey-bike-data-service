@@ -38,6 +38,7 @@ MovesUserApiService.movesApi = function(username, url, next) {
         console.log('error ' + error);
         throw error;
       }
+      console.log("# Results: " + JSON.parse(body).length);
       return next(JSON.parse(body, error));
     });
   });
@@ -47,8 +48,9 @@ MovesUserApiService.buildApiUrl = function(entity, results) {
   var url = "/user/" + entity + "/daily?pastDays=14";
   if (results.length > 0) {
      url += "&updatedSince=";
-     url += moment(results[0].lastUpdate).utc().format('YYYYMMDDTHHmmss') + "Z";
+     url += moment(results[0].lastUpdate).format('YYYYMMDDTHHmmss') + "Z";
   }
+  //console.log(moment(results[0].lastUpdate).format());
   return url;
 }
 

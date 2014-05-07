@@ -24,7 +24,7 @@ movesSegmentSchema.virtual('totalTime').get(function () {
 var movesDailyPlaceSchema = mongoose.Schema({
   date: { type: Date, required: true},
   segments: [ movesSegmentSchema ],
-  // lastUpdate: { type: Date }
+  lastUpdate: { type: Date }
 });
 
 var movesDailyPlace = mongoose.model('PlaceVisit', movesDailyPlaceSchema);

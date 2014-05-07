@@ -119,33 +119,35 @@ app.get('/dashboard', routes.dashboard);
 app.get('/moves/authorize', movesAuth.authorize(moves));
 app.get('/moves/token', movesAuth.token(moves, MovesUser));
 
-app.get('/dailySummaries', function(req, res) {
-  MovesDaySummary.find({}, function(err, summaries) {
+app.get('/dailySummaries.json', function(req, res) {
+  MovesDaySummary.find({}).sort('-date').exec(function(err, summaries) {
     if (!err){
-      console.log(summaries);
-      res.render('summaries', { summaries: summaries })
-    } else { throw err;}
+      res.json({ summaries: summaries })
+    } else { 
+      throw err;
+    }
   });
 });
 
-app.get('/weeklyBiking', function(req, res) {
-  end = moment();
-  start = moment().subtract('days', 7)
-  MovesDaySummary.find({ summary: { $elemMatch: { activity: 'cycling' } } }, function(err, summaries) {
+app.get('/dailyPlaces.json', function(req, res) {
+  MovesDailyPlace.find().sort('-date').exec(function(err, dailyPlaces) {
     if (!err){
-      res.json({ summaries: summaries });
-    } else { throw err;}
+      res.json({ dailyPlaces: dailyPlaces })
+    } else { 
+      throw err;
+    }
   });
 });
 
-app.get('/places', function(req, res) {
-  MovesDailyPlace.find({}, function(err, dailyPlaces) {
-    if (!err){
-      console.log(dailyPlaces);
-      res.render('places', { dailyPlaces: dailyPlaces })
-    } else { throw err;}
-  });
-});
+// app.get('/weeklyBiking', function(req, res) {
+//   end = moment();
+//   start = moment().subtract('days', 7)
+//   MovesDaySummary.find({ summary: { $elemMatch: { activity: 'cycling' } } }, function(err, summaries) {
+//     if (!err){
+//       res.json({ summaries: summaries });
+//     } else { throw err;}
+//   });
+// });
 
 app.get('/login', function(req, res){
   res.render('login', { user: req.user, message: req.session.messages });
