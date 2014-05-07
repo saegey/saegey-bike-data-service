@@ -28,44 +28,17 @@ db.once("open", function callback() {
   console.log("Connected to DB");
 });
 
-// Passport session setup.
-//   To support persistent login sessions, Passport needs to be able to
-//   serialize users into and deserialize users out of the session.  Typically,
-//   this will be as simple as storing the user ID when serializing, and finding
-//   the user by ID when deserializing.
-// passport.serializeUser(function(user, done) {
-//   done(null, user.id);
-// });
-
-// passport.deserializeUser(function(id, done) {
-//   User.findById(id, function (err, user) {
-//     done(err, user);
-//   });
-// });
-
-
-// // Use the LocalStrategy within Passport.
-// //   Strategies in passport require a `verify` function, which accept
-// //   credentials (in this case, a username and password), and invoke a callback
-// //   with a user object.  In the real world, this would query a database;
-// //   however, in this example we are using a baked-in set of users.
-// passport.use(new LocalStrategy(function(username, password, done) {
-//   User.findOne({ username: username }, function(err, user) {
-//     if (err) { return done(err); }
-//     if (!user) {
-//       return done(null, false, { message: "Unknown user " + username });
-//     }
-//     user.comparePassword(password, function(err, isMatch) {
-//       if (err) return done(err);
-//       if(isMatch) {
-//         return done(null, user);
-//       } else {
-//         return done(null, false, { message: 'Invalid password' });
-//       }
-//     });
-//   });
-// }));
-
+passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.GITHUB_CALLBACK_URL
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ githubId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
 
 var app = express();
 
@@ -85,8 +58,7 @@ app.configure(function () {
     res.locals.moment = require('moment')
     next();
   });
-  // Initialize Passport!  Also use passport.session() middleware, to support
-  // persistent login sessions (recommended).
+
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);
@@ -145,27 +117,15 @@ app.get('/dailyPlaces.json', function(req, res) {
 //   });
 // });
 
-app.get('/login', function(req, res){
-  res.render('login', { user: req.user, message: req.session.messages });
-});
+app.get('/auth/github',
+  passport.authenticate('github'));
 
-// POST /login
-//   This is an alternative implementation that uses a custom callback to
-//   acheive the same functionality.
-app.post("/login", function(req, res, next) {
-  passport.authenticate("local", function(err, user, info) {
-    if (err) { return next(err); }
-    if (!user) {
-      req.session.messages =  [info.message];
-      console.log('user not found');
-      return res.redirect('/login')
-    }
-    req.logIn(user, function(err) {
-      if (err) { return next(err); }
-      return res.redirect('/account');
-    });
-  })(req, res, next);
-});
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
 app.get('/logout', function(req, res){
   req.logout();
