@@ -50,16 +50,7 @@ MovesUserApiService.buildApiUrl = function(entity, results) {
      url += "&updatedSince=";
      url += moment(results[0].lastUpdate).format('YYYYMMDDTHHmmss') + "Z";
   }
-  //console.log(moment(results[0].lastUpdate).format());
   return url;
 }
-
-// MovesUserApiService.lastUpdate = function(entity) {
-//   var lastUpdate = {};
-//   switch(entity) {
-//     case 'dailySummary':
-//       lastUpdate
-//   }
-// }
 
 module.exports = MovesUserApiService;
