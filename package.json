@@ -24,6 +24,7 @@
     "moves": "0.0.2",
     "node-schedule": "^0.1.13",
     "passport": "^0.2.0",
+    "passport-github": "^0.1.5",
     "passport-local": "^1.0.0",
     "supergoose": "^0.2.3",
     "underscore": "^1.6.0"
