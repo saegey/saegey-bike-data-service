@@ -22,10 +22,14 @@ activitySchema.virtual('friendlyDate').get(function () {
 });
 
 var movesDaySummarySchema = mongoose.Schema({
-  date:  { type: Number },
-  summary: [activitySchema]
-  // lastUpdate: { type: Date, required: true }
+  date:  { type: Date },
+  summary: [activitySchema],
+  lastUpdate: { type: Date }
 });
+
+// movesDaySummarySchema.statics.findByName = function (name, cb) {
+//   this.find({ name: new RegExp(name, 'i') }, cb);
+// }
 
 var MovesDaySummary = mongoose.model('MovesDaySummary', movesDaySummarySchema);
 module.exports = MovesDaySummary;

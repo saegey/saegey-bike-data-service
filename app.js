@@ -133,8 +133,7 @@ app.get('/weeklyBiking', function(req, res) {
   start = moment().subtract('days', 7)
   MovesDaySummary.find({ summary: { $elemMatch: { activity: 'cycling' } } }, function(err, summaries) {
     if (!err){
-      console.log(summaries);
-      //res.render('summaries', { summaries: summaries })
+      res.json({ summaries: summaries });
     } else { throw err;}
   });
 });
