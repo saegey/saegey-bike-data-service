@@ -15,34 +15,40 @@ function MovesUserApiService(username) {
 
 MovesUserApiService.prototype.dailySummary = function(next) {
   var username = this.username;
-  MovesDaySummary.find().sort('-lastUpdate').exec(function(err, summary) {
-    console.log(summary);
-    var url = "/user/summary/daily?pastDays=14";
-    if (summary.length > 0) {
-       url += "updatedSince=";
-       url += moment(summary[0].lastUpdate).utc().format('YYYYMMDDTHHmmss') + "Z";
-    }
-    console.log(url);
+  MovesDaySummary.find().sort('-lastUpdate').exec(function(err, results) {
+    var url = MovesUserApiService.buildApiUrl('summary', results);
     MovesUserApiService.movesApi(username, url, next);
   });
 }
 
 MovesUserApiService.prototype.dailyPlaces = function(next) {
-  var url = "/user/places/daily?pastDays=14"
-  MovesUserApiService.movesApi(this.username, url, next);
+  var username = this.username;
+  MovesDailyPlace.find().sort('-lastUpdate').exec(function(err, results) {
+    var url = MovesUserApiService.buildApiUrl('places', results);
+    MovesUserApiService.movesApi(username, url, next);
+  });
 }
 
 MovesUserApiService.movesApi = function(username, url, next) {
   MovesUser.findOne({ userId: username }, function(err, movesUser) {
+    console.log('Retrieving: ' + url);
     moves.get(url, movesUser.accessToken, function(error, response, body) {
       if(error) {
         console.log('error ' + error);
         throw error;
       }
-      console.log(JSON.parse(body));
       return next(JSON.parse(body, error));
     });
   });
+}
+
+MovesUserApiService.buildApiUrl = function(entity, results) {
+  var url = "/user/" + entity + "/daily?pastDays=14";
+  if (results.length > 0) {
+     url += "&updatedSince=";
+     url += moment(results[0].lastUpdate).utc().format('YYYYMMDDTHHmmss') + "Z";
+  }
+  return url;
 }
 
 // MovesUserApiService.lastUpdate = function(entity) {

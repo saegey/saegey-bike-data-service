@@ -97,17 +97,16 @@ function saveSummary(summary) {
   MovesDaySummary.findOneAndUpdate({date: summary.date }, summary, ['upsert'], function(err, result) {
     if (err) { throw err; }
     if (!result) {
-      console.log("Summary not found for day");
       var daySummary = new MovesDaySummary(summary);
       daySummary.save(function(err) {
         if(err) {
           console.log(err);
         } else {
-          console.log('movesSummary: ' + daySummary.date + " saved.");
+          console.log('Created: ' + moment(daySummary.date).format('MM-DD-YYYY'));
         }
       });
     } else {
-      console.log("Summary updated.");
+      console.log("Updated:" + moment(result.date).format('MM-DD-YYYY'));
     }
   });
 }
