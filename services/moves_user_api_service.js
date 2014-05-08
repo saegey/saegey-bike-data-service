@@ -15,17 +15,25 @@ function MovesUserApiService(username) {
 }
 
 MovesUserApiService.prototype.dailySummary = function(next) {
-  var username = this.username;
-  MovesDaySummary.find().sort('-lastUpdate').exec(function(err, results) {
-    var url = MovesUserApiService.buildApiUrl('summary', results);
-    MovesUserApiService.movesApi(username, url, next);
-  });
+  MovesUserApiService.movesGetNewData(
+    MovesDaySummary, 'summary', this.username, next
+  );
 }
 
 MovesUserApiService.prototype.dailyPlaces = function(next) {
-  var username = this.username;
-  MovesDailyPlace.find().sort('-lastUpdate').exec(function(err, results) {
-    var url = MovesUserApiService.buildApiUrl('places', results);
+  MovesUserApiService.movesGetNewData(
+    MovesDailyPlace, 'places', this.username, next
+  );
+  // var username = this.username;
+  // MovesDailyPlace.find().sort('-lastUpdate').exec(function(err, results) {
+  //   var url = MovesUserApiService.buildApiUrl('places', results);
+  //   MovesUserApiService.movesApi(username, url, next);
+  // });
+}
+
+MovesUserApiService.movesGetNewData = function(model, entity, username, next) {
+  model.find().sort('-lastUpdate').exec(function(err, results) {
+    var url = MovesUserApiService.buildApiUrl(entity, results);
     MovesUserApiService.movesApi(username, url, next);
   });
 }
