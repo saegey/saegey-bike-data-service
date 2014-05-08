@@ -1,7 +1,12 @@
 var kue = require('kue');
 var schedule = require('node-schedule');
 var moment = require('moment');
-var jobs = kue.createQueue();
+var jobs = kue.createQueue({
+  redis: {
+    port: process.env.REDIS_PORT_6379_TCP_PORT,
+    host: process.env.REDIS_PORT_6379_TCP_ADDR
+  }
+});
 var minute = 100;
 var mongoose = require('mongoose');
 var MovesDataStorageService = require('./services/moves_data_storage_service');
