@@ -9,7 +9,7 @@ exports.authorize = function(moves) {
 exports.token = function(moves, MovesUser) {
   return function(req, res) {
     moves.token(req.query.code, function(error, response, body) {
-      body = JSON.parse(body)
+      var body = JSON.parse(body)
       console.log(body);
 
       var movesUser = new MovesUser({
