@@ -34,17 +34,21 @@ MovesDataStorageService.prototype.syncDailyPlaces = function() {
   this.apiService.dailyPlaces(function(results) {
     for (var i = 0; i < results.length; ++i) {
       results[i].date = new Date(moment(results[i].date, "YYYYMMDD").format());
-      results[i].lastUpdate = results[i].lastUpdate.slice(0, results[i].lastUpdate.length - 1);
+      results[i].lastUpdate = results[i].lastUpdate.slice(
+        0, results[i].lastUpdate.length - 1
+      );
       results[i].lastUpdate = new Date(
         moment(results[i].lastUpdate, "YYYYMMDDTHHmmss").utc()
       );
-      for (j = 0; j < results[i].segments.length; ++j) {
+      for (var j = 0; j < results[i].segments.length; ++j) {
         // 20121212T000000+0200
         var segment = results[i].segments[j];
         segment.startTime = moment(segment.startTime, "YYYYMMDDTHHmmssZ");
         segment.endTime = moment(segment.endTime, "YYYYMMDDTHHmmssZ");
         // 20140506T171207Z
-        segment.lastUpdate = segment.lastUpdate.slice(0, segment.lastUpdate.length - 1)
+        segment.lastUpdate = segment.lastUpdate.slice(
+          0, segment.lastUpdate.length - 1
+        );
         segment.lastUpdate = moment(segment.lastUpdate, "YYYYMMDDTHHmmss");
         results[i].segments[j] = segment;
       }

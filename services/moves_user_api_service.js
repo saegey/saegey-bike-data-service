@@ -31,7 +31,7 @@ MovesUserApiService.movesGetNewData = function(model, entity, username, next) {
     var url = MovesUserApiService.buildApiUrl(entity, results);
     MovesUserApiService.movesApi(username, url, next);
   });
-}
+};
 
 MovesUserApiService.movesApi = function(username, url, next) {
   MovesUser.findOne({ userId: username }, function(err, movesUser) {
@@ -45,7 +45,7 @@ MovesUserApiService.movesApi = function(username, url, next) {
       return next(JSON.parse(body, error));
     });
   });
-}
+};
 
 MovesUserApiService.buildApiUrl = function(entity, results) {
   var url = "/user/" + entity + "/daily?pastDays=14";
@@ -54,6 +54,6 @@ MovesUserApiService.buildApiUrl = function(entity, results) {
      url += moment(results[0].lastUpdate).format('YYYYMMDDTHHmmss') + "Z";
   }
   return url;
-}
+};
 
 module.exports = MovesUserApiService;
