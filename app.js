@@ -38,11 +38,13 @@ db.once("open", function callback() {
 //   have a database of user records, the complete GitHub profile is serialized
 //   and deserialized.
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  done(null, user.id);
 });
 
 passport.deserializeUser(function(obj, done) {
-  done(null, obj);
+  User.findById(id, function (err, user) {
+    done(err, user);
+  });
 });
 
 passport.use(new GitHubStrategy({
@@ -51,8 +53,23 @@ passport.use(new GitHubStrategy({
     callbackURL: process.env.GITHUB_CALLBACK_URL
   },
   function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ githubId: profile.id }, function (err, user) {
-      return done(err, user);
+    // var profile = JSON.parse(profile);
+    profile.githubId = profile.id;
+    User.findOneAndUpdate({ githubId: profile.id }, profile, ['upsert'], function (err, result) {
+      console.log(profile);
+      if (err) { throw err; }
+      if (!result) {
+        var user = new User(profile);
+        user.save(function(err) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('Created: [User] ' + profile.id);
+          }
+        });
+      } else {
+        console.log('Updated: [User] ' + result.githubId);
+      }
     });
   }
 ));
@@ -158,7 +175,7 @@ app.get('/auth/github',
 app.get('/auth/github/callback', 
   passport.authenticate('github', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/dailySummaries');
   });
 
 app.get('/logout', function(req, res){
