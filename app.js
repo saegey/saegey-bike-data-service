@@ -4,8 +4,7 @@ var logfmt = require("logfmt");
 var routes = require("./routes");
 var movesAuth = require("./routes/moves");
 var moment = require('moment');
-var http = require("http");
-var path = require("path");
+// var path = require("path");
 var Moves = require("moves");
 var GitHubStrategy = require('passport-github').Strategy;
 
@@ -16,8 +15,8 @@ var moves = new Moves({
   redirect_uri: process.env.MOVES_REDIRECT_URI
 });
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
+
 var User = require('./models/user');
 var MovesUser = require('./models/moves_user');
 var MovesDaySummary = require('./models/moves_day_summary');
@@ -41,8 +40,8 @@ passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
 
-passport.deserializeUser(function(obj, done) {
-  User.findById(id, function (err, user) {
+passport.deserializeUser(function(user, done) {
+  User.find({id: user.id}, function (err, user) {
     done(err, user);
   });
 });
@@ -65,10 +64,12 @@ passport.use(new GitHubStrategy({
             console.log(err);
           } else {
             console.log('Created: [User] ' + profile.id);
+            done();
           }
         });
       } else {
         console.log('Updated: [User] ' + result.githubId);
+        done();
       }
     });
   }
@@ -89,7 +90,7 @@ app.configure(function () {
   app.use(express.session({ secret: 'keyboard cat' }));
 
   app.use(function(req, res, next){
-    res.locals.moment = require('moment')
+    res.locals.moment = require('moment');
     next();
   });
 
@@ -160,12 +161,7 @@ app.get('/login', function(req, res){
 //   request.  The first step in GitHub authentication will involve redirecting
 //   the user to github.com.  After authorization, GitHubwill redirect the user
 //   back to this application at /auth/github/callback
-app.get('/auth/github',
-  passport.authenticate('github'),
-  function(req, res){
-    // The request will be redirected to GitHub for authentication, so this
-    // function will not be called.
-  });
+app.get('/auth/github', passport.authenticate('github')});
 
 // GET /auth/github/callback
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -190,12 +186,12 @@ app.get('/logout', function(req, res){
 //   login page.
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login')
+  res.redirect('/login');
 }
 
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
 
 app.listen(app.get("port"));
 

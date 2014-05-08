@@ -18,18 +18,13 @@ MovesUserApiService.prototype.dailySummary = function(next) {
   MovesUserApiService.movesGetNewData(
     MovesDaySummary, 'summary', this.username, next
   );
-}
+};
 
 MovesUserApiService.prototype.dailyPlaces = function(next) {
   MovesUserApiService.movesGetNewData(
     MovesDailyPlace, 'places', this.username, next
   );
-  // var username = this.username;
-  // MovesDailyPlace.find().sort('-lastUpdate').exec(function(err, results) {
-  //   var url = MovesUserApiService.buildApiUrl('places', results);
-  //   MovesUserApiService.movesApi(username, url, next);
-  // });
-}
+};
 
 MovesUserApiService.movesGetNewData = function(model, entity, username, next) {
   model.find().sort('-lastUpdate').exec(function(err, results) {
