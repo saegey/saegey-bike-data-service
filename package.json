@@ -29,6 +29,7 @@
     "passport": "^0.2.0",
     "passport-github": "^0.1.5",
     "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.1.2",
     "supergoose": "^0.2.3",
     "underscore": "^1.6.0"
   },
