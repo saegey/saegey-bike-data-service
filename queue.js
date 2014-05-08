@@ -1,5 +1,4 @@
 var kue = require('kue');
-var schedule = require('node-schedule');
 var moment = require('moment');
 var jobs = kue.createQueue({
   redis: {
@@ -18,14 +17,17 @@ db.once("open", function callback() {
   console.log("Connected to DB");
 });
 
-var j = schedule.scheduleJob('*/5 * * * *', function() {
-  jobs.create('updateMovesData', {
+function newJob() {
+  var job = jobs.create('new_job', {
     title: 'Update moves data',
     username: 'adams'
-  }).priority('high').save();
-});
+  })
+  job.save()
+}
 
-jobs.process('updateMovesData', 10, function (job, done) {
+setInterval(newJob, 600000);
+
+jobs.process('new_job', function (job, done) {
   var dataStorageService = new MovesDataStorageService(job.data.username);
   dataStorageService.syncDailySummary();
   dataStorageService.syncDailyPlaces();
