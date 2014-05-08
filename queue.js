@@ -18,7 +18,7 @@ db.once("open", function callback() {
   console.log("Connected to DB");
 });
 
-var j = schedule.scheduleJob('0 */2 * * *', function() {
+var j = schedule.scheduleJob('*/5 * * * *', function() {
   jobs.create('updateMovesData', {
     title: 'Update moves data',
     username: 'adams'
