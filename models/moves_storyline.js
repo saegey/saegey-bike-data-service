@@ -28,7 +28,7 @@ var moveSchema = mongoose.Schema({
     endTime: { type: Date, required: true },
     lastUpdate: { type: Date, required: true},
     type: { type: String },
-    activites: [activitySchema]
+    activities: [activitySchema]
 });
 
 

@@ -59,6 +59,7 @@ app.get('/moves/authorize', moves.authorizeUser);
 app.get('/moves/token', moves.handleAuth);
 app.get('/moves/dailyPlaces', moves.dailyPlaces);
 app.get('/moves/dailySummaries', moves.dailySummaries);
+app.get('/moves/storyline', moves.storyline);
 app.get('/instagram/authorize', instagramAuth.authorizeUser);
 app.get('/instagram/token', instagramAuth.authorizeUser);
 

@@ -1,5 +1,5 @@
 /*jslint node: true */
-/*jslin nomen: true */
+/*jslint nomen: true */
 'use strict';
 
 var kue = require('kue'),
@@ -22,7 +22,6 @@ var MovesDataStorageService = require('./services/moves_data_storage_service');
 var MovesUserApiService = require('./services/moves_user_api_service');
 
 var dataStorageService = new MovesDataStorageService(process.env.MOVES_ACCESS_TOKEN);
-dataStorageService.syncDailyPlaces();
 
 function updateMovesData() {
     var job = jobs.create('update_moves_data', {
@@ -32,12 +31,13 @@ function updateMovesData() {
     job.save();
 }
 
-// setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
+setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 
 jobs.process('update_moves_data', function (job, done) {
     var dataStorageService = new MovesDataStorageService(job.data.accessToken);
-    // dataStorageService.syncDailySummary();
+    dataStorageService.syncDailySummary();
     dataStorageService.syncDailyPlaces();
+    dataStorageService.syncStoryline();
     done();
 });
 

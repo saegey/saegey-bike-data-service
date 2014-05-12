@@ -1,5 +1,5 @@
 /*jslint node: true */
-/*jslin nomen: true */
+/*jslint nomen: true */
 'use strict';
 
 var moment = require('moment'),
@@ -24,22 +24,13 @@ function MovesDataStorageService(accessToken) {
 
 MovesDataStorageService.prototype.syncDailySummary = function () {
     this.apiService.dailySummary(function (results) {
-        _.each(results, function (summary) {
+        _.each(results, function (result) {
             // Use UTC function that is below
-            summary.date = new Date(moment(summary.date, "YYYYMMDD").format());
-            if (summary.lastUpdate !== 'undefined') {
-                summary.lastUpdate = summary.lastUpdate.slice(
-                    0,
-                    summary.lastUpdate.length - 1
-                );
-                console.log(summary.lastUpdate);
-                summary.lastUpdate = new Date(
-                    moment(summary.lastUpdate, "YYYYMMDDTHHmmss").format()
-                );
-            } else {
-                delete summary.lastUpdate;
-            }
-            MovesDataStorageService.save(summary, MovesDaySummary);
+            result.date = new Date(moment(result.date, "YYYYMMDD").format());
+            result.lastUpdate = MovesDataStorageService._convert_utc_to_date(
+                result.lastUpdate
+            );
+            MovesDataStorageService.save(result, MovesDaySummary);
         });
     });
 };
@@ -65,54 +56,67 @@ MovesDataStorageService.prototype.syncDailyPlaces = function () {
     });
 };
 
-MovesDataStorageService.prototype.syncStoryline = function() {
+MovesDataStorageService.prototype.syncStoryline = function () {
     this.apiService.storyline(function (results) {
-        for (var i = 0; i < results.length; ++i) {
-            var result = results[i];
+        _.each(results, function (result) {
             result.date = new Date(moment(result.date, "YYYYMMDD").format());
-            var segments = result.segments;
             result.lastUpdate = MovesDataStorageService._convert_utc_to_date(
-                result.lastUpdate.toString()
+                result.lastUpdate
             );
-
-
-            for (var j = 0; j < segments.length; ++j) {
-                if (segments[j].type == 'move') {
-                    // console.log(segments[j]);
-                    result.segments[j].startTime = moment(
-                        result.segments[j].startTime, "YYYYMMDDTHHmmssZ"
+            _.each(result.segments, function (segment, segmentIndex) {
+                if (segment.type === 'move') {
+                    segment.startTime = moment(
+                        segment.startTime,
+                        "YYYYMMDDTHHmmssZ"
                     );
-                    result.segments[j].endTime = moment(
-                        result.segments[j].endTime, "YYYYMMDDTHHmmssZ"
+                    segment.endTime = moment(
+                        segment.endTime,
+                        "YYYYMMDDTHHmmssZ"
                     );
-                    result.segments[j].lastUpdate = MovesDataStorageService._convert_utc_to_date(
-                        result.segments[j].lastUpdate
+                    segment.lastUpdate = MovesDataStorageService._convert_utc_to_date(
+                        segment.lastUpdate
                     );
-                    if (typeof segments[j].activities === 'undefined') {
-                        segments[j].activities = [];
-                    }
-                    for (var k = 0; k < segments[j].activities.length; ++k) {
-                        result.segments[j].activities[k].startTime = moment(
-                            result.segments[j].activities[k].startTime, "YYYYMMDDTHHmmssZ"
+                    _.each(segment.activities, function (activity, activityIndex) {
+                        activity.startTime = moment(
+                            activity.startTime,
+                            "YYYYMMDDTHHmmssZ"
                         );
-                        result.segments[j].activities[k].endTime = moment(
-                            result.segments[j].activities[k].endTime, "YYYYMMDDTHHmmssZ"
+                        activity.endTime = moment(
+                            activity.endTime,
+                            "YYYYMMDDTHHmmssZ"
                         );
-                    }
-                    console.log(result);
-                    
+                        if (activity.trackPoints) {
+                            _.each(activity.trackPoints, function (trackPoint, trackPointIndex) {
+                                activity.trackPoints[trackPointIndex].time = moment(
+                                    trackPoint.time,
+                                    "YYYYMMDDTHHmmssZ"
+                                );
+                            });
+                        }
+                        segment.activities[activityIndex] = activity;
+                    });
+                    result.segments[segmentIndex] = segment;
                 } else {
-                    delete result.segments[j];
+                    delete result.segments[segmentIndex];
                 }
-                MovesDataStorageService.save(result, MovesStoryline);
-            }
-        }
+            });
+            // clean blank elements that were remove that werent type "move"
+            // this done to not screw up the index in the each loop
+            result.segments = result.segments.filter(function (n) {
+                return n !== undefined;
+            });
+            MovesDataStorageService.save(result, MovesStoryline);
+        });
     });
 };
 
-MovesDataStorageService._convert_utc_to_date = function(currentDate) {
-    var newDate = currentDate.slice(0, currentDate.length - 1);
-    return new Date(moment(newDate, "YYYYMMDDTHHmmss").utc());
+MovesDataStorageService._convert_utc_to_date = function (currentDate) {
+    if (currentDate && currentDate.length) {
+        var newDate = currentDate.slice(0, currentDate.length - 1);
+        return new Date(moment(newDate, "YYYYMMDDTHHmmss").utc());
+    } else {
+        return Date.now();
+    }
 };
 
 MovesDataStorageService.save = function (summary, Model) {

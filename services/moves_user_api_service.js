@@ -11,8 +11,7 @@ var moment = require('moment'),
         redirect_uri: process.env.MOVES_REDIRECT_URI
     });
 
-var MovesUser = require('../models/moves_user'),
-    MovesDaySummary = require('../models/moves_day_summary'),
+var MovesDaySummary = require('../models/moves_day_summary'),
     MovesDailyPlace = require('../models/moves_daily_place'),
     MovesStoryline = require('../models/moves_storyline');
 
@@ -73,7 +72,7 @@ MovesUserApiService.movesApi = function (accessToken, url, next) {
 
 MovesUserApiService.buildApiUrl = function (entity, results, trackPoints, pastDays) {
     var url = "/user/" + entity + "/daily?";
-    if (!pastDays === "undefined") {
+    if (pastDays) {
         url += "pastDays=" + pastDays;
     } else {
         url += "pastDays=14";
@@ -82,7 +81,7 @@ MovesUserApiService.buildApiUrl = function (entity, results, trackPoints, pastDa
         url += "&updatedSince=";
         url += moment(results[0].lastUpdate).format('YYYYMMDDTHHmmss') + "Z";
     }
-    if (!trackPoints === "undefined") { url += "&trackPoints=true"; }
+    if (trackPoints) { url += "&trackPoints=true"; }
     return url;
 };
 

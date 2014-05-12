@@ -5,6 +5,7 @@
 var Moves = require("moves"),
     MovesDailyPlace = require('../models/moves_daily_place'),
     MovesDaySummary = require('../models/moves_day_summary'),
+    MovesStoryline = require('../models/moves_storyline'),
     moves = new Moves({
         api_base: "https://api.moves-app.com/api/1.1",
         client_id: process.env.MOVES_CLIENT_ID,
@@ -50,4 +51,14 @@ exports.dailySummaries = function (req, res) {
             throw err;
         }
     });
+}
+
+exports.storyline = function (req, res) {
+    MovesStoryline.find({}).sort('-date').exec(function (err, storyline) {
+    if (!err) {
+        res.json({ storyline: storyline });
+    } else {
+        throw err;
+    }
+});
 }
