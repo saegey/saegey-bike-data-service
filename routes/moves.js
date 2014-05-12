@@ -13,17 +13,16 @@ exports.authorize = function (moves) {
 exports.token = function (moves, MovesUser) {
     return function (req, res) {
         moves.token(req.query.code, function (error, response, body) {
-            var parsedBody = JSON.parse(body)
-            console.log(body);
-
+            var parsedBody = JSON.parse(body);
             var movesUser = new MovesUser({
                 userId: 'adams',
-                refreshToken: body.refresh_token,
-                accessToken: body.access_token
+                refreshToken: parsedBody.refresh_token,
+                accessToken: parsedBody.access_token
             });
+            console.log(parsedBody);
 
-            movesUser.save(function(err) {
-                if(err) {
+            movesUser.save(function (err) {
+                if (err) {
                     console.log(err);
                 } else {
                     console.log('movesUser: ' + movesUser.accessToken + " saved.");

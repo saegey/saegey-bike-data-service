@@ -21,8 +21,8 @@ activitySchema.virtual('distanceMiles').get(function () {
 });
 
 activitySchema.virtual('friendlyDate').get(function () {
-    return Date.parse(this.date.substr(4,2) + "/" +
-        this.date.substr(6,2) + "/" + this.date.substr(0,4));
+    return Date.parse(this.date.substr(4, 2) + "/" +
+        this.date.substr(6, 2) + "/" + this.date.substr(0, 4));
 });
 
 var movesDaySummarySchema = mongoose.Schema({

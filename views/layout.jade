@@ -5,17 +5,7 @@ html(lang="en")
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="stylesheet", href="/stylesheets/main.css")
   body
-    .site-wrapper
-      .site-wrapper-inner
-        .cover-container
-          include includes/nav
-          .inner.cover
-            block content
-          .mastfoot
-            .inner
-              p
-                | Built with&nbsp;
-                a(href="http://getbootstrap.com") Bootstrap
-                |  with love
+    include includes/nav
+    block content
   script(src="/bower_components/jquery/dist/jquery.js")
   script(src="/javascripts/main.js")

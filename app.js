@@ -1,7 +1,7 @@
 /*jslint node: true */
 /*jslin nomen: true */
 'use strict';
-/*global require, module,  __dirname */
+
 var express = require("express");
 var logfmt = require("logfmt");
 var routes = require("./routes");
