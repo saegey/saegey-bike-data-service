@@ -2,33 +2,52 @@
 /*jslin nomen: true */
 'use strict';
 
-exports.authorize = function (moves) {
-    return function (req, res) {
-        moves.authorize({
-            scope: ['activity', 'location'],
-            state: '123'
-        }, res);
-    };
-};
-exports.token = function (moves, MovesUser) {
-    return function (req, res) {
-        moves.token(req.query.code, function (error, response, body) {
-            var parsedBody = JSON.parse(body);
-            var movesUser = new MovesUser({
-                userId: 'adams',
-                refreshToken: parsedBody.refresh_token,
-                accessToken: parsedBody.access_token
-            });
-            console.log(parsedBody);
+var Moves = require("moves"),
+    MovesDailyPlace = require('../models/moves_daily_place'),
+    MovesDaySummary = require('../models/moves_day_summary'),
+    moves = new Moves({
+        api_base: "https://api.moves-app.com/api/1.1",
+        client_id: process.env.MOVES_CLIENT_ID,
+        client_secret: process.env.MOVES_CLIENT_SECRET,
+        redirect_uri: process.env.MOVES_REDIRECT_URI
+    });
 
-            movesUser.save(function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log('movesUser: ' + movesUser.accessToken + " saved.");
-                    res.redirect("/");
-                }
-            });
-        });
-    };
+exports.authorizeUser = function (req, res) {
+    res.redirect(
+        moves.authorize({scope: ['activity', 'location'], state: '123'})
+    );
 };
+
+exports.handleAuth = function (req, res) {
+    moves.token(req.query.code, function (err, result, body) {
+        if (err) {
+            console.log(err.body);
+            res.send("Didn't work");
+        } else {
+            var parsedBody = JSON.parse(body);
+            console.log('Ya! [MOVES] Access token is ' + parsedBody.access_token);
+            console.log('Ya! [MOVES] Refresh token is ' + parsedBody.refresh_token);
+            res.send('You did it!!!');
+        }
+    });
+};
+
+exports.dailyPlaces = function (req, res) {
+    MovesDailyPlace.find().sort('-date').exec(function (err, results) {
+        if (!err) {
+            res.json({ dailyPlaces: results });
+        } else {
+            throw err;
+        }
+    });
+};
+
+exports.dailySummaries = function (req, res) {
+    MovesDaySummary.find({}).sort('-date').exec(function (err, summaries) {
+        if (!err) {
+            res.json({ dailySummaries: summaries });
+        } else {
+            throw err;
+        }
+    });
+}
