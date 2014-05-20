@@ -34,9 +34,7 @@ exports.handleAuth = function (req, res) {
             res.send("Didn't work");
         } else {
             var parsedBody = JSON.parse(body);
-            console.log('Ya! [MOVES] Access token is ' + parsedBody.access_token);
-            console.log('Ya! [MOVES] Refresh token is ' + parsedBody.refresh_token);
-            res.send('You did it!!!');
+            res.send('Ya! Access token is ' + parsedBody.access_token + ' Refresh token is ' + parsedBody.refresh_token);
         }
     });
 };
