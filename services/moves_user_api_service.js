@@ -65,7 +65,6 @@ MovesUserApiService.movesApi = function (accessToken, url, next) {
             console.log('error ' + error);
             throw error;
         }
-        console.log("# Results: " + JSON.parse(body).length);
         return next(JSON.parse(body, error));
     });
 };
