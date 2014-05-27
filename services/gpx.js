@@ -5,7 +5,7 @@
 var moment = require("moment");
 var builder = require('xmlbuilder');
 function p(thing) {
-    return moment(thing).format("YYYY-MM-DDTHH:mm:ssZ");
+    return moment(thing).utc().format("YYYY-MM-DDTHH:mm:ss");
 }
 
 var createGPX = function (storyline, callback) {
@@ -37,9 +37,9 @@ var createGPX = function (storyline, callback) {
                         activity.trackPoints.forEach(function (tp) {
                             var point = {
                                 trkpt: {
-                                    "@lat": tp.lat.toString(),
-                                    "@lon": tp.lon.toString(),
-                                    time: { "#text": p(tp.time) }
+                                    "@lat": tp.lat.toPrecision(10).toString(),
+                                    "@lon": tp.lon.toPrecision(10).toString(),
+                                    time: { "#text": p(tp.time) + "Z" }
                                 }
                             };
                             seg.trkseg["#list"].push(point);
@@ -53,7 +53,7 @@ var createGPX = function (storyline, callback) {
         });
     }
     if (obj.gpx.trk["#list"].length > 0) {
-        callback(null, builder.create(obj).end());
+        callback(null, builder.create(obj).end({ pretty: true, indent: '  ', newline: '\n' }));
     } else {
         callback(new Error("No cycling segments"));
     }

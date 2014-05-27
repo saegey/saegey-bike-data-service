@@ -1,5 +1,4 @@
 /*jslint node: true */
-/*jslint nomen: true */
 'use strict';
 
 var kue = require('kue'),
@@ -20,8 +19,8 @@ db.once("open", function callback() {
 
 var MovesDataStorageService = require('./services/moves_data_storage_service');
 var MovesUserApiService = require('./services/moves_user_api_service');
+var MovesStravaUploadService = require('./services/moves_strava_upload_service');
 
-var dataStorageService = new MovesDataStorageService(process.env.MOVES_ACCESS_TOKEN);
 
 function updateMovesData() {
     var job = jobs.create('update_moves_data', {
@@ -38,6 +37,8 @@ jobs.process('update_moves_data', function (job, done) {
     dataStorageService.syncDailySummary();
     dataStorageService.syncDailyPlaces();
     dataStorageService.syncStoryline();
+    var stravaService = new MovesStravaUploadService();
+    stravaService.uploadNewRides();
     done();
 });
 

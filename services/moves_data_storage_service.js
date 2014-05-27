@@ -93,6 +93,9 @@ MovesDataStorageService.prototype.syncStoryline = function () {
                                 );
                             });
                         }
+                        // if (activity.activity === 'cycling') {
+                        //     result.includesCycling = true;
+                        // }
                         segment.activities[activityIndex] = activity;
                     });
                     result.segments[segmentIndex] = segment;

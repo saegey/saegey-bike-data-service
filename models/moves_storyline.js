@@ -35,7 +35,9 @@ var moveSchema = mongoose.Schema({
 var movesStorylineSchema = mongoose.Schema({
     date: { type: Date, required: true},
     segments: [moveSchema],
-    lastUpdate: { type: Date }
+    lastUpdate: { type: Date },
+    includesCycling: { type: Boolean },
+    stravaId: { type: String }
 });
 
 var MovesStoryline = mongoose.model('MovesStoryline', movesStorylineSchema);

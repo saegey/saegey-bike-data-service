@@ -72,22 +72,10 @@ exports.storyline = function (req, res) {
 exports.gpx = function (req, res) {
     MovesStoryline.find().sort('-date').exec(function (err, storylines) {
         if (err) { throw err; }
-        gpx.createGPX(storylines[2], function (err, output) {
+        gpx.createGPX(storylines[3], function (err, output) {
             if (err) { throw err; }
-            // res.send(output);
-            //console.log(output instanceof String);
-            var stravaOptions = {
-                    data_type: 'gpx',
-                    data: output,
-                    external_id: storylines[2].id,
-                    name: storylines[2].id
-                };
-            strava.uploads(stravaOptions, function (err, body) {
-                if (err) { throw err; }
-                console.log(body);
-            });
+            res.send(output);
         });
-        res.send(200);
     });
 };
 
