@@ -28,23 +28,26 @@ MovesStravaUploadService.prototype.uploadNewRides = function () {
         _.each(storylines, function(storyline) {
             console.log("Uploading to Strava - " + storyline.date);
             gpx.createGPX(storyline, function (err, output) {
-                if (err) { throw err; }
-                var stravaOptions = {
-                    data_type: 'gpx',
-                    data: output,
-                    external_id: storyline.id,
-                    name: "New Ride",
-                    wait: true
-                };
-                strava.uploads.upload(stravaOptions, function (err, body) {
-                    if (err) { throw err; }
-                    console.log("Activity id = " + body.activity_id);
-                    storyline.stravaId = body.activity_id;
-                    storyline.save(function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    var stravaOptions = {
+                        data_type: 'gpx',
+                        data: output,
+                        external_id: storyline.id,
+                        name: "New Ride",
+                        wait: true
+                    };
+                    strava.uploads.upload(stravaOptions, function (err, body) {
                         if (err) { throw err; }
+                        console.log("Activity id = " + body.activity_id);
+                        storyline.stravaId = body.activity_id;
+                        storyline.save(function(err) {
+                            if (err) { throw err; }
+                        });
+                        // console.log(body);
                     });
-                    // console.log(body);
-                });
+                }
             });
         });
     });

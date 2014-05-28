@@ -72,9 +72,13 @@ exports.storyline = function (req, res) {
 exports.gpx = function (req, res) {
     MovesStoryline.find().sort('-date').exec(function (err, storylines) {
         if (err) { throw err; }
-        gpx.createGPX(storylines[3], function (err, output) {
-            if (err) { throw err; }
-            res.send(output);
+        gpx.createGPX(storylines[req.query.storyline], function (err, output) {
+            if (err) { 
+                console.log(err);
+                res.send("No cycling inputs");
+            } else {
+                res.send(output);
+            }
         });
     });
 };
