@@ -37,8 +37,8 @@ jobs.process('update_moves_data', function (job, done) {
     dataStorageService.syncDailySummary();
     dataStorageService.syncDailyPlaces();
     dataStorageService.syncStoryline();
-    var stravaService = new MovesStravaUploadService();
-    stravaService.uploadNewRides();
+    // var stravaService = new MovesStravaUploadService();
+    // stravaService.uploadNewRides();
     done();
 });
 
