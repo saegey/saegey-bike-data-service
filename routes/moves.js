@@ -7,6 +7,7 @@ var Moves = require("moves"),
     MovesDaySummary = require('../models/moves_day_summary'),
     MovesStoryline = require('../models/moves_storyline'),
     StravaClient = require("strava"),
+    moment = require("moment"),
     gpx = require('../services/gpx'),
     moves = new Moves({
         api_base: "https://api.moves-app.com/api/1.1",
@@ -60,13 +61,25 @@ exports.dailySummaries = function (req, res) {
 };
 
 exports.storyline = function (req, res) {
-    MovesStoryline.find({}).sort('-date').exec(function (err, storyline) {
-        if (!err) {
-            res.json({ storyline: storyline });
-        } else {
-            throw err;
-        }
-    });
+    function convertDate(d) {
+        return new Date(d.substr(0, 4) + "-" + d.substr(4, 2) + "-" + d.substr(6, 2));
+    }
+    if (req.query.date) {
+        var requestedDate = convertDate(req.query.date);
+        console.log(requestedDate);
+        MovesStoryline.find({date: requestedDate}).exec(function (err, storyline) {
+            if (err) { throw err; }
+            res.json(storyline);
+        });
+    } else {
+        MovesStoryline.find({}).sort('-date').exec(function (err, storyline) {
+            if (!err) {
+                res.json({ storyline: storyline });
+            } else {
+                throw err;
+            }
+        });
+    }
 };
 
 exports.gpx = function (req, res) {
