@@ -21,7 +21,6 @@ var MovesDataStorageService = require('./services/moves_data_storage_service');
 var MovesUserApiService = require('./services/moves_user_api_service');
 var MovesStravaUploadService = require('./services/moves_strava_upload_service');
 
-
 function updateMovesData() {
     var job = jobs.create('update_moves_data', {
         title: 'Update moves data',
@@ -33,12 +32,16 @@ function updateMovesData() {
 setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 
 jobs.process('update_moves_data', function (job, done) {
-    var dataStorageService = new MovesDataStorageService(job.data.accessToken);
-    dataStorageService.syncDailySummary();
-    dataStorageService.syncDailyPlaces();
-    dataStorageService.syncStoryline();
-    // var stravaService = new MovesStravaUploadService();
-    // stravaService.uploadNewRides();
+    try {
+        var dataStorageService = new MovesDataStorageService(job.data.accessToken);
+        dataStorageService.syncDailySummary();
+        dataStorageService.syncDailyPlaces();
+        dataStorageService.syncStoryline();
+        // var stravaService = new MovesStravaUploadService();
+        // stravaService.uploadNewRides();
+    } catch (ex) {
+        console.log(ex);
+    }
     done();
 });
 
