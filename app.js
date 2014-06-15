@@ -6,9 +6,11 @@ var express = require("express"),
     logfmt = require("logfmt"),
     routes = require("./routes"),
     moves = require("./routes/moves"),
-    instagramAuth = require('./routes/instagram'),
+    instagram = require('./routes/instagram'),
     path = require("path"),
-    mongoose = require('mongoose');
+    rollbar = require('rollbar'),
+    mongoose = require('mongoose'),
+    paginate = require('express-paginate');
 
 mongoose.connect(process.env.MONGO_URL);
 var db = mongoose.connection;
@@ -28,10 +30,7 @@ var app = express();
 
 app.configure(function () {
     app.set('port', process.env.PORT || 5000);
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
     app.use(express.cookieParser());
-    app.use(express.bodyParser());
     app.use(allowCrossDomain);
     app.use(express.json());
     app.use(express.urlencoded());
@@ -39,7 +38,7 @@ app.configure(function () {
     app.use(logfmt.requestLogger());
     app.use(express.session({ secret: 'keyboard cat' }));
     app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
+    app.use(paginate.middleware(10, 50));
 });
 
 app.configure('development', function () {
@@ -51,7 +50,9 @@ app.configure('development', function () {
 });
 
 app.configure('production', function () {
-    app.use(express.errorHandler());
+    if (process.env.ROLLBAR_POST_SERVER_ITEM) {
+        app.use(rollbar.errorHandler(process.env.ROLLBAR_POST_SERVER_ITEM));
+    }
 });
 
 app.get('/', routes.index);
@@ -60,28 +61,18 @@ app.get('/moves/token', moves.handleAuth);
 app.get('/moves/dailyPlaces', moves.dailyPlaces);
 app.get('/moves/dailySummaries', moves.dailySummaries);
 app.get('/moves/storyline', moves.storyline);
-app.get('/moves/gpx', moves.gpx);
 app.get('/moves/strava', moves.strava);
-app.get('/instagram/authorize', instagramAuth.authorizeUser);
-app.get('/instagram/token', instagramAuth.authorizeUser);
+app.get('/v1/instagram/authorize', instagram.authorizeUser);
+app.get('/v1/instagram/token', instagram.handleAuth);
+app.get('/v1/instagram/photos', instagram.userPhotos);
+app.get('/v1/instagram/liked', instagram.likedPhotos);
+app.get('/v1/instagram/tag/:tag', instagram.taggedPhotos);
 
-// app.get('/weeklyBiking', function(req, res) {
-//   end = moment();
-//   start = moment().subtract('days', 7)
-//   MovesDaySummary.find({ summary: { $elemMatch: { activity: 'cycling' } } }, function(err, summaries) {
-//     if (!err){
-//       res.json({ summaries: summaries });
-//     } else { throw err;}
-//   });
-// });
-
-app.get('/login', function (req, res) {
-    res.render('login', { user: req.user });
-});
-
-app.get('/logout', function (req, res){
-    req.logout();
-    res.redirect('/');
+app.get('/throw/some/error', function(){
+  throw {
+    status: 500,
+    message: 'we just threw an error for a test case!'
+  };
 });
 
 String.prototype.capitalize = function () {

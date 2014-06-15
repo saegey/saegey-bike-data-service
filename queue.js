@@ -11,6 +11,12 @@ var kue = require('kue'),
     mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGO_URL);
+
+if (process.env.ROLLBAR_POST_SERVER_ITEM) {
+    var rollbar = require("rollbar");
+    rollbar.init(process.env.ROLLBAR_POST_SERVER_ITEM);
+}
+
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function callback() {
@@ -20,6 +26,13 @@ db.once("open", function callback() {
 var MovesDataStorageService = require('./services/moves_data_storage_service');
 var MovesUserApiService = require('./services/moves_user_api_service');
 var MovesStravaUploadService = require('./services/moves_strava_upload_service');
+var InstagramDataStorageService = require('./services/instagram_data_storage_service');
+
+function reportErrors(err) {
+    if (typeof rollbar == 'function') {
+        if (err) { rollbar.reportMessage(err); }
+    }
+}
 
 function updateMovesData() {
     var job = jobs.create('update_moves_data', {
@@ -29,7 +42,12 @@ function updateMovesData() {
     job.save();
 }
 
-setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
+function updateInstagramData() {
+    var job = jobs.create('update_instagram_data', {
+        title: 'Update instagram data'
+    });
+    job.save();
+}
 
 jobs.process('update_moves_data', function (job, done) {
     try {
@@ -42,7 +60,21 @@ jobs.process('update_moves_data', function (job, done) {
     } catch (ex) {
         console.log(ex);
     }
-    done();
+    reportErrors(done);
 });
+
+jobs.process('update_instagram_data', function (job, done) {
+    try {
+        var igSvc = new InstagramDataStorageService();
+        igSvc.syncLikedPhotos();
+        igSvc.syncUserPhotos();
+    } catch (ex) {
+        console.log(ex);
+    }
+    reportErrors(done);
+});
+
+setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
+setInterval(updateInstagramData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 
 kue.app.listen(3000);
