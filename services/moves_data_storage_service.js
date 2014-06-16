@@ -57,6 +57,12 @@ MovesDataStorageService.prototype.syncDailyPlaces = function () {
 };
 
 MovesDataStorageService.prototype.syncStoryline = function () {
+    function formatUtcCondensed(d) {
+        // 20130615T155559-0700
+        var str = d.substr(0,4) + "-" + d.substr(4,2) + "-" + d.substr(6,2) + d.substr(8, 3) + ":" + d.substr(11, 2) + ":" + d.substr(13,2) + d.substr(15, 7)
+        console.log(str);
+        return str;
+    }
     this.apiService.storyline(function (results) {
         _.each(results, function (result) {
             result.date = new Date(moment(result.date, "YYYYMMDD").format());
@@ -87,15 +93,12 @@ MovesDataStorageService.prototype.syncStoryline = function () {
                         );
                         if (activity.trackPoints) {
                             _.each(activity.trackPoints, function (trackPoint, trackPointIndex) {
-                                activity.trackPoints[trackPointIndex].time = moment(
-                                    trackPoint.time,
-                                    "YYYYMMDDTHHmmssZ"
-                                );
+                                activity.trackPoints[trackPointIndex].time = new Date(formatUtcCondensed(trackPoint.time));
                             });
                         }
-                        // if (activity.activity === 'cycling') {
-                        //     result.includesCycling = true;
-                        // }
+                        if (activity.activity === 'cycling') {
+                            result.includesCycling = true;
+                        }
                         segment.activities[activityIndex] = activity;
                     });
                     result.segments[segmentIndex] = segment;
