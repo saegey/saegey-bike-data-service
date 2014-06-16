@@ -1,6 +1,7 @@
 /*jslint node: true */
 /*jslint nomen: true */
 'use strict';
+require('newrelic');
 
 var express = require("express"),
     logfmt = require("logfmt"),
