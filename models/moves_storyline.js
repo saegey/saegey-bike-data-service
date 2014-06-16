@@ -40,5 +40,7 @@ var movesStorylineSchema = mongoose.Schema({
     stravaId: { type: String }
 });
 
+movesStorylineSchema.plugin(require('mongoose-paginate'));
 var MovesStoryline = mongoose.model('MovesStoryline', movesStorylineSchema);
+
 module.exports = MovesStoryline;

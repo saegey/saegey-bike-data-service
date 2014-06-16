@@ -31,9 +31,6 @@ var movesDaySummarySchema = mongoose.Schema({
     lastUpdate: { type: Date }
 });
 
-// movesDaySummarySchema.statics.findByName = function (name, cb) {
-//   this.find({ name: new RegExp(name, 'i') }, cb);
-// }
-
+movesDaySummarySchema.plugin(require('mongoose-paginate'));
 var MovesDaySummary = mongoose.model('MovesDaySummary', movesDaySummarySchema);
 module.exports = MovesDaySummary;

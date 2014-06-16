@@ -26,12 +26,8 @@ exports.dailyPlaces = function (req, res) {
 };
 
 exports.dailySummaries = function (req, res) {
-    MovesDaySummary.find({}).sort('-date').exec(function (err, summaries) {
-        if (!err) {
-            res.json({ dailySummaries: summaries });
-        } else {
-            throw err;
-        }
+    modelPaginate(MovesDaySummary, {}, req, function (paginatedResult) {
+        res.json(paginatedResult);
     });
 };
 
@@ -41,18 +37,13 @@ exports.storyline = function (req, res) {
     }
     if (req.query.date) {
         var requestedDate = convertDate(req.query.date);
-        console.log(requestedDate);
         MovesStoryline.find({date: requestedDate}).exec(function (err, storyline) {
             if (err) { throw err; }
             res.json(storyline);
         });
     } else {
-        MovesStoryline.find({}).sort('-date').exec(function (err, storyline) {
-            if (!err) {
-                res.json({ storyline: storyline });
-            } else {
-                throw err;
-            }
+        modelPaginate(MovesStoryline, {}, req, function (paginatedResult) {
+            res.json(paginatedResult);
         });
     }
 };

@@ -64,8 +64,8 @@ app.get('/auth/moves/token', auth.handleMovesAuth);
 
 // moves endpoints
 app.get('/v1/moves/places', moves.dailyPlaces);
-app.get('/moves/dailySummaries', moves.dailySummaries);
-app.get('/moves/storyline', moves.storyline);
+app.get('/v1/moves/summary', moves.dailySummaries);
+app.get('/v1/moves/storyline', moves.storyline);
 
 // instagram endpoints
 app.get('/v1/instagram/authorize', instagram.authorizeUser);
