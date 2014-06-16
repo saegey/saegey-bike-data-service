@@ -3,7 +3,6 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var moment = require('moment');
 
 var instagramPhotoSchema = mongoose.Schema({
     id: { type: String, required: true },
@@ -12,7 +11,7 @@ var instagramPhotoSchema = mongoose.Schema({
     location:  {
       latitude: { type: Number },
       name: { type: String },
-      longitude: {type: Number },
+      longitude: { type: Number },
       id: { type: Number }
     },
     filter: { type: String, required: true },
@@ -58,7 +57,6 @@ var instagramPhotoSchema = mongoose.Schema({
 });
 
 instagramPhotoSchema.plugin(require('mongoose-paginate'));
-
 var instagramPhoto = mongoose.model('InstagramPhoto', instagramPhotoSchema);
 
 module.exports = instagramPhoto;

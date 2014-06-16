@@ -31,5 +31,7 @@ var movesDailyPlaceSchema = mongoose.Schema({
     lastUpdate: { type: Date }
 });
 
+movesDailyPlaceSchema.plugin(require('mongoose-paginate'));
 var movesDailyPlace = mongoose.model('PlaceVisit', movesDailyPlaceSchema);
+
 module.exports = movesDailyPlace;

@@ -2,51 +2,26 @@
 /*jslint nomen: true */
 'use strict';
 
-var Moves = require("moves"),
-    MovesDailyPlace = require('../models/moves_daily_place'),
+var MovesDailyPlace = require('../models/moves_daily_place'),
     MovesDaySummary = require('../models/moves_day_summary'),
     MovesStoryline = require('../models/moves_storyline'),
     StravaClient = require("strava"),
-    moment = require("moment"),
-    gpx = require('../services/gpx'),
-    moves = new Moves({
-        api_base: "https://api.moves-app.com/api/1.1",
-        client_id: process.env.MOVES_CLIENT_ID,
-        client_secret: process.env.MOVES_CLIENT_SECRET,
-        redirect_uri: process.env.MOVES_REDIRECT_URI
-    }),
-    strava = new StravaClient({
-        client_id: process.env.STRAVA_CLIENT_ID,
-        client_secret: process.env.STRAVA_CLIENT_SECRET,
-        redirect_uri: process.env.STRAVA_REDIRECT_URI,
-        access_token: process.env.STRAVA_ACCESS_TOKEN
-    });
+    paginate = require('express-paginate');
 
-exports.authorizeUser = function (req, res) {
-    res.redirect(
-        moves.authorize({scope: ['activity', 'location'], state: '123'})
-    );
-};
-
-exports.handleAuth = function (req, res) {
-    moves.token(req.query.code, function (err, result, body) {
-        if (err) {
-            console.log(err.body);
-            res.send("Didn't work");
-        } else {
-            var parsedBody = JSON.parse(body);
-            res.send('Ya! Access token is ' + parsedBody.access_token + ' Refresh token is ' + parsedBody.refresh_token);
-        }
-    });
-};
+function modelPaginate(model, filter, req, next) {
+    model.paginate(filter, req.query.page, req.query.limit, function(err, pageCount, items, itemCount) {
+        if (err) { throw err; }
+        next({
+            object: 'list',
+            has_more: paginate.hasNextPages(req)(pageCount),
+            data: items
+        })
+    }, { sortBy : { date : -1 } });
+}
 
 exports.dailyPlaces = function (req, res) {
-    MovesDailyPlace.find().sort('-date').exec(function (err, results) {
-        if (!err) {
-            res.json({ dailyPlaces: results });
-        } else {
-            throw err;
-        }
+    modelPaginate(MovesDailyPlace, {}, req, function (paginatedResult) {
+        res.json(paginatedResult);
     });
 };
 
@@ -82,19 +57,12 @@ exports.storyline = function (req, res) {
     }
 };
 
-exports.gpx = function (req, res) {
-    MovesStoryline.find().sort('-date').exec(function (err, storylines) {
-        if (err) { throw err; }
-        gpx.createGPX(storylines[req.query.storyline], function (err, output) {
-            if (err) { 
-                console.log(err);
-                res.send("No cycling inputs");
-            } else {
-                res.send(output);
-            }
-        });
-    });
-};
+var strava = new StravaClient({
+    client_id: process.env.STRAVA_CLIENT_ID,
+    client_secret: process.env.STRAVA_CLIENT_SECRET,
+    redirect_uri: process.env.STRAVA_REDIRECT_URI,
+    access_token: process.env.STRAVA_ACCESS_TOKEN
+});
 
 exports.strava = function (req, res) {
     strava.athlete.activities.get({}, function (err, res) {

@@ -7,6 +7,7 @@ var express = require("express"),
     logfmt = require("logfmt"),
     routes = require("./routes"),
     moves = require("./routes/moves"),
+    auth = require("./routes/auth"),
     instagram = require('./routes/instagram'),
     path = require("path"),
     rollbar = require('rollbar'),
@@ -56,29 +57,22 @@ app.configure('production', function () {
     }
 });
 
+// oauth helper endpoints
 app.get('/', routes.index);
-app.get('/moves/authorize', moves.authorizeUser);
-app.get('/moves/token', moves.handleAuth);
-app.get('/moves/dailyPlaces', moves.dailyPlaces);
+app.get('/auth/moves/authorize', auth.authorizeMovesUser);
+app.get('/auth/moves/token', auth.handleMovesAuth);
+
+// moves endpoints
+app.get('/v1/moves/places', moves.dailyPlaces);
 app.get('/moves/dailySummaries', moves.dailySummaries);
 app.get('/moves/storyline', moves.storyline);
-app.get('/moves/strava', moves.strava);
+
+// instagram endpoints
 app.get('/v1/instagram/authorize', instagram.authorizeUser);
 app.get('/v1/instagram/token', instagram.handleAuth);
 app.get('/v1/instagram/photos', instagram.userPhotos);
 app.get('/v1/instagram/liked', instagram.likedPhotos);
 app.get('/v1/instagram/tag/:tag', instagram.taggedPhotos);
-
-app.get('/throw/some/error', function(){
-  throw {
-    status: 500,
-    message: 'we just threw an error for a test case!'
-  };
-});
-
-String.prototype.capitalize = function () {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-};
 
 app.listen(app.get("port"));
 
