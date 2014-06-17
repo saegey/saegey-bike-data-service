@@ -61,6 +61,8 @@ app.configure('production', function () {
 app.get('/', routes.index);
 app.get('/auth/moves/authorize', auth.authorizeMovesUser);
 app.get('/auth/moves/token', auth.handleMovesAuth);
+app.get('/auth/instagram/authorize', auth.authorizeInstagramUser);
+app.get('/auth/instagram/token', auth.handleInstagramAuth);
 
 // moves endpoints
 app.get('/v1/moves/places', moves.dailyPlaces);
@@ -68,8 +70,6 @@ app.get('/v1/moves/summary', moves.dailySummaries);
 app.get('/v1/moves/storyline', moves.storyline);
 
 // instagram endpoints
-app.get('/v1/instagram/authorize', instagram.authorizeUser);
-app.get('/v1/instagram/token', instagram.handleAuth);
 app.get('/v1/instagram/photos', instagram.userPhotos);
 app.get('/v1/instagram/liked', instagram.likedPhotos);
 app.get('/v1/instagram/tag/:tag', instagram.taggedPhotos);
