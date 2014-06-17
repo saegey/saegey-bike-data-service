@@ -60,7 +60,7 @@ jobs.process('update_moves_data', function (job, done) {
     } catch (ex) {
         console.log(ex);
     }
-    reportErrors(done);
+    done();
 });
 
 jobs.process('update_instagram_data', function (job, done) {
@@ -71,7 +71,7 @@ jobs.process('update_instagram_data', function (job, done) {
     } catch (ex) {
         console.log(ex);
     }
-    reportErrors(done);
+    done();
 });
 
 setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
