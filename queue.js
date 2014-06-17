@@ -28,6 +28,7 @@ var MovesDataStorageService = require('./services/moves_data_storage_service');
 var MovesUserApiService = require('./services/moves_user_api_service');
 var MovesStravaUploadService = require('./services/moves_strava_upload_service');
 var InstagramDataStorageService = require('./services/instagram_data_storage_service');
+var StravaDataStorageService = require('./services/strava_data_storage_service');
 
 function updateMovesData() {
     var job = jobs.create('update_moves_data', {
@@ -40,6 +41,13 @@ function updateMovesData() {
 function updateInstagramData() {
     var job = jobs.create('update_instagram_data', {
         title: 'Update instagram data'
+    });
+    job.save();
+}
+
+function updateStravaData() {
+    var job = jobs.create('update_strava_data', {
+        title: 'Update strava data'
     });
     job.save();
 }
@@ -73,8 +81,14 @@ jobs.process('update_instagram_data', function (job, done) {
     done();
 });
 
+jobs.process('update_strava_data', function (job, done) {
+    StravaDataStorageService.saveActivities();
+    done();
+});
+
 setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 setInterval(updateInstagramData, process.env.MOVES_UPDATE_INTERVAL || 30000);
+setInterval(updateStravaData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 
 // kue UI
 var app = express();

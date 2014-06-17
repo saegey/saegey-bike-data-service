@@ -8,6 +8,7 @@ var express = require("express"),
     routes = require("./routes"),
     moves = require("./routes/moves"),
     auth = require("./routes/auth"),
+    strava = require("./routes/strava"),
     instagram = require('./routes/instagram'),
     path = require("path"),
     rollbar = require('rollbar'),
@@ -73,6 +74,9 @@ app.get('/v1/moves/storyline', moves.storyline);
 app.get('/v1/instagram/photos', instagram.userPhotos);
 app.get('/v1/instagram/liked', instagram.likedPhotos);
 app.get('/v1/instagram/tag/:tag', instagram.taggedPhotos);
+
+// strava endpoints
+app.get('/v1/strava/activities', strava.activities);
 
 app.listen(app.get("port"));
 
