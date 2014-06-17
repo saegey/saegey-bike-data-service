@@ -1,2 +1,2 @@
 web: node app.js
-queue: node queue.js
+worker: node queue.js
