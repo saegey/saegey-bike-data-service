@@ -5,28 +5,17 @@
 var MovesDailyPlace = require('../models/moves_daily_place'),
     MovesDaySummary = require('../models/moves_day_summary'),
     MovesStoryline = require('../models/moves_storyline'),
-    StravaClient = require("strava"),
-    paginate = require('express-paginate');
-
-function modelPaginate(model, filter, req, next) {
-    model.paginate(filter, req.query.page, req.query.limit, function(err, pageCount, items, itemCount) {
-        if (err) { throw err; }
-        next({
-            object: 'list',
-            has_more: paginate.hasNextPages(req)(pageCount),
-            data: items
-        })
-    }, { sortBy : { date : -1 } });
-}
-
+    paginate = require('express-paginate'),
+    ModelHelper = require('../lib/model_helper');
+    
 exports.dailyPlaces = function (req, res) {
-    modelPaginate(MovesDailyPlace, {}, req, function (paginatedResult) {
+    ModelHelper.paginate(MovesDailyPlace, {}, req, function (paginatedResult) {
         res.json(paginatedResult);
     });
 };
 
 exports.dailySummaries = function (req, res) {
-    modelPaginate(MovesDaySummary, {}, req, function (paginatedResult) {
+    ModelHelper.paginate(MovesDaySummary, {}, req, function (paginatedResult) {
         res.json(paginatedResult);
     });
 };
@@ -42,26 +31,10 @@ exports.storyline = function (req, res) {
             res.json(storyline);
         });
     } else {
-        modelPaginate(MovesStoryline, {}, req, function (paginatedResult) {
+        ModelHelper.paginate(MovesStoryline, {}, req, function (paginatedResult) {
             res.json(paginatedResult);
         });
     }
 };
 
-var strava = new StravaClient({
-    client_id: process.env.STRAVA_CLIENT_ID,
-    client_secret: process.env.STRAVA_CLIENT_SECRET,
-    redirect_uri: process.env.STRAVA_REDIRECT_URI,
-    access_token: process.env.STRAVA_ACCESS_TOKEN
-});
-
-exports.strava = function (req, res) {
-    strava.athlete.activities.get({}, function (err, res) {
-        console.log(res[0]);
-        MovesStoryline.findById(res[0].external_id.split(".")[0], function (err, res) {
-            console.log(res);
-        });
-    });
-    res.send(200);
-};
 
