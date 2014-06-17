@@ -8,7 +8,8 @@ var kue = require('kue'),
             host: process.env.REDIS_PORT_6379_TCP_ADDR
         }
     }),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    express = require("express");
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -75,4 +76,8 @@ jobs.process('update_instagram_data', function (job, done) {
 setInterval(updateMovesData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 setInterval(updateInstagramData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 
-kue.app.listen(3000);
+// kue UI
+var app = express();
+app.use(express.basicAuth(process.env.KUE_USERNAME, process.env.KUE_PASSWORD));
+app.use(kue.app);
+app.listen(3000);
