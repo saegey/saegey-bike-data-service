@@ -28,12 +28,6 @@ var MovesUserApiService = require('./services/moves_user_api_service');
 var MovesStravaUploadService = require('./services/moves_strava_upload_service');
 var InstagramDataStorageService = require('./services/instagram_data_storage_service');
 
-function reportErrors(err) {
-    if (typeof rollbar == 'function') {
-        if (err) { rollbar.reportMessage(err); }
-    }
-}
-
 function updateMovesData() {
     var job = jobs.create('update_moves_data', {
         title: 'Update moves data',
@@ -58,7 +52,9 @@ jobs.process('update_moves_data', function (job, done) {
         // var stravaService = new MovesStravaUploadService();
         // stravaService.uploadNewRides();
     } catch (ex) {
-        console.log(ex);
+        if (typeof rollbar == 'function') {
+            if (err) { rollbar.reportMessage(err); }
+        }
     }
     done();
 });
@@ -69,7 +65,9 @@ jobs.process('update_instagram_data', function (job, done) {
         igSvc.syncLikedPhotos();
         igSvc.syncUserPhotos();
     } catch (ex) {
-        console.log(ex);
+        if (typeof rollbar == 'function') {
+            if (err) { rollbar.reportMessage(err); }
+        }
     }
     done();
 });
