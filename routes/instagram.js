@@ -27,14 +27,14 @@ exports.userPhotos = function (req, res) {
     var filter = { 'user.username': process.env.INSTAGRAM_USERNAME }
     ModelHelper.paginate(InstagramPhoto, filter, req, function(formattedResult) {
         res.json(formattedResult);
-    });
+    }, 'created_time');
 };
 
 exports.likedPhotos = function (req, res) {
     var filter = { 'user.username': { $ne: process.env.INSTAGRAM_USERNAME } }
     ModelHelper.paginate(InstagramPhoto, filter, req, function(formattedResult) {
         res.json(formattedResult);
-    });
+    }, 'created_time');
 };
 
 exports.taggedPhotos = function (req, res) {
