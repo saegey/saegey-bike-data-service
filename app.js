@@ -10,6 +10,7 @@ var express = require("express"),
     auth = require("./routes/auth"),
     strava = require("./routes/strava"),
     instagram = require('./routes/instagram'),
+    bikes = require('./routes/bikes'),
     path = require("path"),
     rollbar = require('rollbar'),
     mongoose = require('mongoose'),
@@ -74,6 +75,10 @@ app.get('/v1/moves/storyline', moves.storyline);
 app.get('/v1/instagram/photos', instagram.userPhotos);
 app.get('/v1/instagram/liked', instagram.likedPhotos);
 app.get('/v1/instagram/tag/:tag', instagram.taggedPhotos);
+
+// bike endpoints
+app.get('/v1/bikes', bikes.index);
+app.get('/v1/bikes/:tag', bikes.show);
 
 // strava endpoints
 app.get('/v1/strava/activities', strava.activities);
