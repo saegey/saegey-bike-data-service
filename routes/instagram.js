@@ -12,17 +12,6 @@ ig.use({
     client_secret: process.env.INSTAGRAM_CLIENT_SECRET
 });
 
-// function instagramPaginate(filter, req, next) {
-//     InstagramPhoto.paginate(filter, req.query.page, req.query.limit, function(err, pageCount, photos, itemCount) {
-//         if (err) return next(err)
-//         next({
-//             object: 'list',
-//             has_more: paginate.hasNextPages(req)(pageCount),
-//             data: photos
-//         })
-//     }, { sortBy : { created_time : -1 } });
-// }
-
 exports.userPhotos = function (req, res) {
     var filter = { 'user.username': process.env.INSTAGRAM_USERNAME }
     ModelHelper.paginate(InstagramPhoto, filter, req, function(formattedResult) {
