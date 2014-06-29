@@ -6,10 +6,34 @@ var MovesDailyPlace = require('../models/moves_daily_place'),
     MovesDaySummary = require('../models/moves_day_summary'),
     MovesStoryline = require('../models/moves_storyline'),
     paginate = require('express-paginate'),
-    ModelHelper = require('../lib/model_helper');
+    ModelHelper = require('../lib/model_helper'),
+    _ = require('underscore');
+
+function getUnique(day) {
+    var newarr = [],
+        unique = {};
+
+    _.each(day.segments, function (item) {
+        if (item.place.name && !unique[item.place.name]) {
+            newarr.push(item);
+            unique[item.place.name] = item;
+        }
+    });
+    return newarr;
+}
+
+function getUniquePlaces(days) {
+    _.each(days, function (day, key) {
+        days[key].segments = getUnique(day);
+    });
+    return days;
+}
     
 exports.dailyPlaces = function (req, res) {
     ModelHelper.paginate(MovesDailyPlace, {}, req, function (paginatedResult) {
+        if (req.query && req.query.unique === 'true') {
+            paginatedResult['data'] = getUniquePlaces(paginatedResult.data);
+        }
         res.json(paginatedResult);
     });
 };
