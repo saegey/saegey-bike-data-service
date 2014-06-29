@@ -36,8 +36,6 @@ InstagramDataStorageService.savePhotos = function (err, medias, pagination, limi
                 result.save(function(err) {
                     if(err) {
                         console.log(err);
-                    } else {
-                        console.log('Updated: [InstagramPhoto]: ' + result.created_time);
                     }
                 });
             }
