@@ -17,6 +17,21 @@ var bikes = [
     }
 ];
 
+function groupBy( array , f ) {
+  var groups = {};
+  array.forEach( function( o )
+  {
+    var group = JSON.stringify( f(o) );
+    groups[group] = groups[group] || [];
+    groups[group].push( o );  
+  });
+  return Object.keys(groups).map( function( group )
+  {
+    return groups[group]; 
+  })
+}
+
+
 function buildData(rows) {
     var formattedData = [];
     for(var i=1; i < rows.length; i++) {
@@ -59,12 +74,20 @@ exports.show = function (req, res) {
             csv.parse(body, function(err, output) {
                 if (err) { console.log(err); }
                 bikeParts = buildData(output);
+
+                if (req.query.group_by) {
+                    var bikeGroups = groupBy(bikeParts, function(item) {
+                        var groupBy = req.query.group_by;
+                        return [item[groupBy]];
+                    });
+                }
+
                 res.json({
                     summary: {
                         total_cost: "$" + sumField(bikeParts, 'cost'),
                         total_weight: sumField(bikeParts, 'weight')
                     },
-                    details: bikeParts
+                    details: bikeGroups || bikeParts
                 });
             });
         });
