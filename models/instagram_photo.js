@@ -56,6 +56,17 @@ var instagramPhotoSchema = mongoose.Schema({
     }
 });
 
+instagramPhotoSchema.statics.findByTag = function(tag, callback) {
+    var InstagramPhoto = this || mongoose.model('InstagramPhoto', instagramPhotoSchema);
+    var filter = {
+        "tags": {
+            '$regex' : '.*' + tag + '.*'
+        },
+        "user.username": process.env.INSTAGRAM_USERNAME
+    };
+    InstagramPhoto.find(filter, callback);
+}
+
 instagramPhotoSchema.plugin(require('mongoose-paginate'));
 var instagramPhoto = mongoose.model('InstagramPhoto', instagramPhotoSchema);
 

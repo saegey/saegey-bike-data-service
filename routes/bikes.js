@@ -3,6 +3,7 @@ var csv = require('csv'),
     _ = require('underscore'),
     StravaGear = require('../models/strava_gear'),
     StravaActivity = require('../models/strava_activity'),
+    InstagramPhoto = require('../models/instagram_photo'),
     ModelHelper = require('../lib/model_helper');
 
 var bikes = [
@@ -105,15 +106,22 @@ exports.show = function (req, res) {
                     });
                 }
 
-                res.json({
-                    summary: {
-                        name: foundBike.name,
-                        tag: foundBike.tag,
-                        total_cost: "$" + sumField(bikeParts, 'cost'),
-                        total_weight: sumField(bikeParts, 'weight')
-                    },
-                    details: bikeGroups || bikeParts
-                });
+                InstagramPhoto.findByTag(foundBike.tag, function(err, photos) {
+                    if (err) { throw err; }
+                    var returnData = {
+                        summary: {
+                            name: foundBike.name,
+                            tag: foundBike.tag,
+                            total_cost: "$" + sumField(bikeParts, 'cost'),
+                            total_weight: sumField(bikeParts, 'weight')
+                        },
+                        details: bikeGroups || bikeParts
+                    }
+                    if (photos) {
+                        returnData['photos'] = photos;
+                    }
+                    res.json(returnData);
+                })
             });
         });
     }
