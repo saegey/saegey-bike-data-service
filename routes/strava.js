@@ -10,4 +10,3 @@ exports.activities = function (req, res) {
         res.json(paginatedResult);
     });
 };
-

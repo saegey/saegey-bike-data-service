@@ -78,7 +78,8 @@ app.get('/v1/instagram/tag/:tag', instagram.taggedPhotos);
 
 // bike endpoints
 app.get('/v1/bikes', bikes.index);
-app.get('/v1/bikes/:tag', bikes.show);
+app.get('/v1/bikes/:bike', bikes.show);
+app.get('/v1/bikes/:bike/rides', bikes.rides);
 
 // strava endpoints
 app.get('/v1/strava/activities', strava.activities);

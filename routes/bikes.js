@@ -1,17 +1,20 @@
 var csv = require('csv'),
     request = require('request'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    StravaGear = require('../models/strava_gear'),
+    StravaActivity = require('../models/strava_activity'),
+    ModelHelper = require('../lib/model_helper');
 
 var bikes = [
     {
         "id": "1", 
-        "name": "Crosscheck",
+        "name": "Surly Crosscheck",
         "tag": "crosscheck",
         "docKey": "0AmHVoD078iZkdEgwUDR5UE9PVHU4TVAzanFqTnAtb3c&gid=0"
     },
     {
         "id": "2", 
-        "name": "Juice 29er", 
+        "name": "Soma Juice",
         "tag": "juice29er",
         "docKey": "0AmHVoD078iZkdEgwUDR5UE9PVHU4TVAzanFqTnAtb3c&gid=4"
     }
@@ -34,12 +37,12 @@ function groupBy( array , f ) {
 
 function buildData(rows) {
     var formattedData = [];
-    for(var i=1; i < rows.length; i++) {
-      var part = {};
-      for(var j=0; j < rows[0].length; j++) {
-        part[rows[0][j].toLowerCase()] = rows[i][j];
-      }
-      formattedData.push(part);
+    for(var i = 1; i < rows.length; i++) {
+        var part = {};
+        for(var j=0; j < rows[0].length; j++) {
+            part[rows[0][j].toLowerCase()] = rows[i][j];
+        }
+        formattedData.push(part);
     }
     return formattedData;
 }
@@ -58,14 +61,34 @@ function buildGoogleDocUrl(docKey) {
     return docUrl;
 }
 
+function findBike(bikeName) {
+    var foundBike = _.find(bikes, function(bike){ 
+        return bike.tag == bikeName;
+    });
+    return foundBike;
+}
+
 exports.index = function (req, res) {
     res.json(bikes);
 }
 
-exports.show = function (req, res) {
-    var foundBike = _.find(bikes, function(bike){ 
-        return bike.tag == req.params.tag;
+exports.rides = function (req, res) {
+    var foundBike = findBike(req.params.bike);
+    StravaGear.findOne({ name: foundBike.name }, function (err, bike) {
+        if (err) { throw err; }
+        if (bike) {
+            var filter = { 'gear_id': bike.id };
+            ModelHelper.paginate(StravaActivity, filter, req, function(formattedResult) {
+                res.json(formattedResult);
+            }, 'start_date');
+        } else {
+            res.status(404).send('Not found'); 
+        }
     });
+}
+
+exports.show = function (req, res) {
+    var foundBike = findBike(req.params.bike);
     if (!foundBike) { 
         res.status(404).send('Not found'); 
     } else {
@@ -84,6 +107,8 @@ exports.show = function (req, res) {
 
                 res.json({
                     summary: {
+                        name: foundBike.name,
+                        tag: foundBike.tag,
                         total_cost: "$" + sumField(bikeParts, 'cost'),
                         total_weight: sumField(bikeParts, 'weight')
                     },
