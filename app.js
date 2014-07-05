@@ -70,6 +70,7 @@ app.get('/auth/instagram/token', auth.handleInstagramAuth);
 app.get('/v1/moves/places', moves.dailyPlaces);
 app.get('/v1/moves/summary', moves.dailySummaries);
 app.get('/v1/moves/storyline', moves.storyline);
+app.get('/v1/activity/bike', moves.bikeRides);
 
 // instagram endpoints
 app.get('/v1/instagram/photos', instagram.userPhotos);

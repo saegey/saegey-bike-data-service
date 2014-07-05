@@ -38,6 +38,13 @@ exports.dailyPlaces = function (req, res) {
     });
 };
 
+exports.bikeRides = function (req, res) {
+    var filter = { includesCycling: true };
+    ModelHelper.paginate(MovesStoryline, filter, req, function (paginatedResult) {
+        res.json(paginatedResult);
+    });
+};
+
 exports.dailySummaries = function (req, res) {
     ModelHelper.paginate(MovesDaySummary, {}, req, function (paginatedResult) {
         res.json(paginatedResult);
