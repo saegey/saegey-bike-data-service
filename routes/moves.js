@@ -41,7 +41,41 @@ exports.dailyPlaces = function (req, res) {
 exports.bikeRides = function (req, res) {
     var filter = { includesCycling: true };
     ModelHelper.paginate(MovesStoryline, filter, req, function (paginatedResult) {
-        res.json(paginatedResult);
+        var bikeRides = [];
+
+        paginatedResult.data.forEach(function (day) {
+            day.segments.forEach(function (segment) {
+                segment.activities.forEach(function (activity) {
+                    var tempLat = 0;
+                    var tempLon = 0;
+                    if (activity.activity === 'cycling') {
+                        activity = activity.toObject();
+
+                        activity.trackPoints.forEach(function (trackPt, index) {
+                            activity.trackPoints[index] = {
+                                latitude: trackPt.lat,
+                                longitude: trackPt.lon,
+                                lat: trackPt.lat,
+                                lon: trackPt.lon,
+                                time: trackPt.time
+                            };
+                            tempLat += parseFloat(trackPt.lat);
+                            tempLon += parseFloat(trackPt.lon);
+                        });
+                        // console.log(activity.trackPoints.length);
+                        var numTrackpoints = activity.trackPoints.length;
+                        activity.avgLon = tempLon / numTrackpoints;
+                        activity.avgLat = tempLat / numTrackpoints;
+                        bikeRides.push(activity);
+                    }
+                });
+            });
+        });
+        res.json({
+            data: bikeRides,
+            object: 'list',
+            hasMore: paginatedResult['hasMore']
+        });
     });
 };
 
