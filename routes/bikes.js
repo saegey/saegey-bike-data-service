@@ -11,7 +11,8 @@ var bikes = [
         "id": "1", 
         "name": "Surly Crosscheck",
         "tag": "crosscheck",
-        "docKey": "0AmHVoD078iZkdEgwUDR5UE9PVHU4TVAzanFqTnAtb3c&gid=0"
+        "docKey": "0AmHVoD078iZkdEgwUDR5UE9PVHU4TVAzanFqTnAtb3c&gid=0",
+        'gearId': 'b581082'
     },
     {
         "id": "2", 
@@ -108,19 +109,26 @@ exports.show = function (req, res) {
 
                 InstagramPhoto.findByTag(foundBike.tag, function(err, photos) {
                     if (err) { throw err; }
-                    var returnData = {
-                        summary: {
-                            name: foundBike.name,
-                            tag: foundBike.tag,
-                            total_cost: "$" + sumField(bikeParts, 'cost'),
-                            total_weight: sumField(bikeParts, 'weight')
-                        },
-                        details: bikeGroups || bikeParts
-                    }
-                    if (photos) {
-                        returnData['photos'] = photos;
-                    }
-                    res.json(returnData);
+                    var totalDistance = 0;
+                    StravaActivity.find({'gearId': foundBike.gear_id}, function(err, trips) {
+                        trips.forEach(function (trip) {
+                            totalDistance += trip.distance;
+                        });
+                        var returnData = {
+                            summary: {
+                                name: foundBike.name,
+                                tag: foundBike.tag,
+                                total_cost: "$" + sumField(bikeParts, 'cost'),
+                                total_weight: sumField(bikeParts, 'weight'),
+                                total_miles: totalDistance.toFixed(2)
+                            },
+                            details: bikeGroups || bikeParts
+                        }
+                        if (photos) {
+                            returnData['photos'] = photos;
+                        }
+                        res.json(returnData);
+                    });
                 })
             });
         });
