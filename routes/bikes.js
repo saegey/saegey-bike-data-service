@@ -111,7 +111,7 @@ exports.show = function (req, res) {
                 InstagramPhoto.findByTag(foundBike.tag, function(err, photos) {
                     if (err) { throw err; }
                     var totalDistance = 0;
-                    StravaActivity.find({'gearId': foundBike.gear_id}, function(err, trips) {
+                    StravaActivity.find({'gearId': foundBike.gearId}, function(err, trips) {
                         trips.forEach(function (trip) {
                             totalDistance += trip.distance;
                         });
