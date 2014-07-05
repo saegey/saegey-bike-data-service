@@ -18,7 +18,8 @@ var bikes = [
         "id": "2", 
         "name": "Soma Juice",
         "tag": "juice29er",
-        "docKey": "0AmHVoD078iZkdEgwUDR5UE9PVHU4TVAzanFqTnAtb3c&gid=4"
+        "docKey": "0AmHVoD078iZkdEgwUDR5UE9PVHU4TVAzanFqTnAtb3c&gid=4",
+        'gearId': 'b1060387'
     }
 ];
 
