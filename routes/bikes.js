@@ -120,7 +120,7 @@ exports.show = function (req, res) {
                                 tag: foundBike.tag,
                                 total_cost: "$" + sumField(bikeParts, 'cost'),
                                 total_weight: sumField(bikeParts, 'weight'),
-                                total_miles: totalDistance.toFixed(2)
+                                total_distance: totalDistance.toFixed(2)
                             },
                             details: bikeGroups || bikeParts
                         }
