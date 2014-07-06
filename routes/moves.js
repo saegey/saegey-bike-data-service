@@ -40,7 +40,7 @@ exports.dailyPlaces = function (req, res) {
 
 exports.bikeRides = function (req, res) {
     var filter = { includesCycling: true };
-    ModelHelper.paginate(MovesStoryline, filter, req, function (paginatedResult) {
+    ModelHelper.paginate(MovesStoryline, {}, req, function (paginatedResult) {
         var bikeRides = [];
 
         paginatedResult.data.forEach(function (day) {
@@ -66,6 +66,7 @@ exports.bikeRides = function (req, res) {
                         var numTrackpoints = activity.trackPoints.length;
                         activity.avgLon = tempLon / numTrackpoints;
                         activity.avgLat = tempLat / numTrackpoints;
+                        activity.startDate = day.date;
                         bikeRides.push(activity);
                     }
                 });
