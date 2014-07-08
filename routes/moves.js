@@ -67,6 +67,7 @@ exports.bikeRides = function (req, res) {
                         activity.avgLon = tempLon / numTrackpoints;
                         activity.avgLat = tempLat / numTrackpoints;
                         activity.startDate = day.date;
+                        activity.parentId = day._id;
                         bikeRides.push(activity);
                     }
                 });
