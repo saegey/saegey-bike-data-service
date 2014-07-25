@@ -91,7 +91,7 @@ setInterval(updateInstagramData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 setInterval(updateStravaData, process.env.MOVES_UPDATE_INTERVAL || 30000);
 
 // kue UI
-var app = express();
-app.use(express.basicAuth(process.env.KUE_USERNAME, process.env.KUE_PASSWORD));
-app.use(kue.app);
-app.listen(3000);
+// var app = express();
+// app.use(express.basicAuth(process.env.KUE_USERNAME, process.env.KUE_PASSWORD));
+// app.use(kue.app);
+// app.listen(3000);
