@@ -85,5 +85,8 @@ app.get('/v1/bikes/:bike/rides', bikes.rides);
 // strava endpoints
 app.get('/v1/strava/activities', strava.activities);
 
-app.listen(app.get("port"));
+var port = process.env.PORT || 3000;
+app.listen(port, function () {
+  console.log('Express server listening on port %d in %s mode', port, app.get('env'));
+});
 
