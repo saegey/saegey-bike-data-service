@@ -1,3 +1,7 @@
+if (process.env.NEW_RELIC_LICENSE_KEY) {
+  require('newrelic');
+}
+
 var express = require("express"),
   logfmt = require("logfmt"),
   routes = require("./routes"),
@@ -5,9 +9,6 @@ var express = require("express"),
   mongoose = require('mongoose'),
   paginate = require('express-paginate');
 
-if (process.env.NEW_RELIC_LICENSE_KEY) {
-  require('newrelic');
-}
 mongoose.connect(process.env.MONGOLAB_URI);
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
