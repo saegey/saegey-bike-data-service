@@ -46,6 +46,8 @@ app.configure('development', function () {
 
 app.get('/', routes.index);
 app.get('/v1/bikes', bikes.index);
+app.get('/v1/bikes/spending', bikes.spending);
+app.get('/v1/bikes/components', bikes.components);
 app.get('/v1/bikes/:bike', bikes.show);
 app.get('/v1/bikes/:bike/rides', bikes.rides);
 
