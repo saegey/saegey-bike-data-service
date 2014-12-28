@@ -7,7 +7,7 @@ var StravaGear = require('../models/strava_gear'),
 
 exports.index = function (req, res) {
   BikeDataService.getAllBikes(process.env.GOOGLE_DOC_BIKES, function(data) {
-    return res.json(data);
+    return res.json({"bikes": data });
   });
 };
 

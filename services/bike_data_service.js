@@ -18,7 +18,7 @@ BikeDataService.sumField = function (fields, fieldName) {
 
 BikeDataService.findByBikeName = function (bikeName, groupBy, callback) {
   var url = process.env.GOOGLE_DOC_COMPONENTS;
-  var bikeParts, total_price;
+  var bikeParts, total_price, photos;
 
   var sheetService = new GoogleSheetService(process.env.GOOGLE_DOC_COMPONENTS);
   sheetService.getData(function (result) {
@@ -35,11 +35,14 @@ BikeDataService.findByBikeName = function (bikeName, groupBy, callback) {
         });
       }
 
-      return callback({
-        "total_price": "$" + total_price,
-        "bike_name": bikeName,
-        "components": bikeParts
-      });
+      InstagramPhoto.findByTag(bikeName, function(photos) {
+        return callback({
+          "total_price": "$" + total_price,
+          "bike_name": bikeName,
+          "components": bikeParts,
+          "photos": photos
+        });
+      })
   });
 };
 
