@@ -2,39 +2,9 @@ var _ = require('underscore'),
   StravaGear = require('../models/strava_gear'),
   StravaActivity = require('../models/strava_activity'),
   InstagramPhoto = require('../models/instagram_photo'),
-  ModelHelper = require('../lib/model_helper'),
   GoogleSheetService = require('../services/google_sheet_service');
 
-function buildData(rows) {
-  var formattedData = [];
-  var i, j = 1;
-  var part = {};
-
-  for (i = 1; i < rows.length; i++) {
-    part = {};
-    for (j = 0; j < rows[0].length; j++) {
-      if (rows[0][j]) {
-        part[rows[0][j].toLowerCase()] = rows[i][j];
-      }
-    }
-    formattedData.push(part);
-  }
-  return formattedData;
-}
-
 function BikeDataService() {}
-
-BikeDataService.groupByCol = function (array, f) {
-  var groups = {};
-  array.forEach(function (o) {
-    var group = JSON.stringify(f(o));
-    groups[group] = groups[group] || [];
-    groups[group].push(o);
-  });
-  return Object.keys(groups).map(function (group) {
-    return groups[group];
-  });
-};
 
 BikeDataService.sumField = function (fields, fieldName) {
   var sum = 0;
@@ -60,20 +30,16 @@ BikeDataService.findByBikeName = function (bikeName, groupBy, callback) {
       total_price = BikeDataService.sumField(bikeParts, "cost");
 
       if (groupBy) {
-        bikeParts = BikeDataService.groupByCol(bikeParts, function (item) {
-          return [item[groupBy]];
+        bikeParts = _.groupBy(bikeParts, function(part) {
+          return part[groupBy];
         });
       }
 
-      if (bikeParts.length > 0) {
-        return callback({
-          "total_price": "$" + total_price,
-          "bike_name": bikeName,
-          "components": bikeParts
-        });
-      } else {
-        return callback();
-      }
+      return callback({
+        "total_price": "$" + total_price,
+        "bike_name": bikeName,
+        "components": bikeParts
+      });
   });
 };
 
