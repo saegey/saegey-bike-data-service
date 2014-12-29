@@ -28,6 +28,7 @@ BikeDataService.findByBikeName = function (bikeName, groupBy, callback) {
         }
       });
       total_price = BikeDataService.sumField(bikeParts, "cost");
+      weight = BikeDataService.sumField(bikeParts, "weight");
 
       if (groupBy) {
         bikeParts = _.groupBy(bikeParts, function(part) {
@@ -35,12 +36,23 @@ BikeDataService.findByBikeName = function (bikeName, groupBy, callback) {
         });
       }
 
+      var cleaned_parts = [];
+      _.map(bikeParts, function(num, key) {
+        cleaned_parts.push({
+          group: key,
+          cost: BikeDataService.sumField(bikeParts[key], "cost"),
+          weight: BikeDataService.sumField(bikeParts[key], "weight"),
+          parts: bikeParts[key]
+        });
+      });
+
       InstagramPhoto.findByTag(bikeName, function(err, photos) {
         if (err) { throw err; }
         return callback({
+          "weight": weight,
           "total_price": "$" + total_price,
           "bike_name": bikeName,
-          "components": bikeParts,
+          "components": cleaned_parts,
           "photos": photos
         });
       });
