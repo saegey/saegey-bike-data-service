@@ -35,14 +35,15 @@ BikeDataService.findByBikeName = function (bikeName, groupBy, callback) {
         });
       }
 
-      InstagramPhoto.findByTag(bikeName, function(photos) {
+      InstagramPhoto.findByTag(bikeName, function(err, photos) {
+        if (err) { throw err; }
         return callback({
           "total_price": "$" + total_price,
           "bike_name": bikeName,
           "components": bikeParts,
           "photos": photos
         });
-      })
+      });
   });
 };
 
