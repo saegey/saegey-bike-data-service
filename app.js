@@ -7,6 +7,7 @@ var express = require("express"),
   routes = require("./routes"),
   bikes = require('./routes/bikes'),
   photos = require('./routes/photos'),
+  bike_racing = require('./routes/bike_racing'),
   mongoose = require('mongoose'),
   paginate = require('express-paginate');
 
@@ -49,6 +50,7 @@ app.get('/', routes.index);
 app.get('/v1/bikes', bikes.index);
 app.get('/v1/bikes/spending', bikes.spending);
 app.get('/v1/bikes/components', bikes.components);
+app.get('/v1/bikes/racing', bike_racing.index);
 app.get('/v1/bikes/:bike', bikes.show);
 app.get('/v1/bikes/:bike/rides', bikes.rides);
 app.get('/v1/photos/user', photos.user);
