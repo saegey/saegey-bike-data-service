@@ -13,7 +13,7 @@ exports.index = function (req, res) {
 
 exports.spending = function(req, res) {
   BikeDataService.getSpending(
-    process.env.GOOGLE_DOC_COMPONENTS, 
+    process.env.GOOGLE_DOC_COMPONENTS,
     function (data) {
       res.json(data);
     }
@@ -35,16 +35,16 @@ exports.rides = function (req, res) {
           if (bike) {
             var filter = { 'gear_id': bike.id };
             ModelHelper.paginate(
-              StravaActivity, 
-              filter, 
-              req, 
+              StravaActivity,
+              filter,
+              req,
               function (formattedResult) {
                 res.json(formattedResult);
               },
               'start_date'
             );
           } else {
-            res.status(404).send('Not found'); 
+            res.status(404).send('Not found');
           }
         });
       }
@@ -55,7 +55,7 @@ exports.rides = function (req, res) {
 exports.show = function (req, res) {
   BikeDataService.findByBikeName(
     req.params.bike,
-    req.query.group_by, 
+    req.query.group_by,
     function(data) {
       if (data) {
         return res.json(data);
