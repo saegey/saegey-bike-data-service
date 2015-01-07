@@ -6,6 +6,7 @@ var express = require("express"),
   logfmt = require("logfmt"),
   routes = require("./routes"),
   bikes = require('./routes/bikes'),
+  photos = require('./routes/photos'),
   mongoose = require('mongoose'),
   paginate = require('express-paginate');
 
@@ -50,6 +51,9 @@ app.get('/v1/bikes/spending', bikes.spending);
 app.get('/v1/bikes/components', bikes.components);
 app.get('/v1/bikes/:bike', bikes.show);
 app.get('/v1/bikes/:bike/rides', bikes.rides);
+app.get('/v1/photos/user', photos.user);
+app.get('/v1/photos/liked', photos.liked);
+app.get('/v1/photos/tag/:tag', photos.user);
 
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
